@@ -1,0 +1,24 @@
+# Node
+node_modules/
+.next/
+out/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Database
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
