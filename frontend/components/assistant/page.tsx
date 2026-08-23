@@ -2,9 +2,9 @@ export default function AssistantPage() {
   return (
     <main className="min-h-screen bg-[#06080f] px-6 py-20 text-white">
       <div className="mx-auto max-w-5xl">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
+        <div className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
           RAFON AI
-        </p>
+        </div>
 
         <h1 className="mt-4 text-5xl font-black">
           AI Shopping Assistant
@@ -16,7 +16,9 @@ export default function AssistantPage() {
         </p>
 
         <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-          <p className="text-sm text-slate-500">Featured demo</p>
+          <p className="text-sm text-slate-500">
+            Featured demo
+          </p>
 
           <p className="mt-3 font-semibold text-cyan-300">
             “I need wireless earbuds for gaming under ₹6000.”
