@@ -14,16 +14,6 @@ export default function AssistantPage() {
           Tell RAFON what you want to buy and the agent will understand your
           intent, recommend products and prepare the commerce journey.
         </p>
-
-        <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-          <p className="text-sm text-slate-500">
-            Featured demo
-          </p>
-
-          <p className="mt-3 font-semibold text-cyan-300">
-            “I need wireless earbuds for gaming under ₹6000.”
-          </p>
-        </div>
       </div>
     </main>
   );
