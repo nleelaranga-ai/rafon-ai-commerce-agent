@@ -28,7 +28,11 @@ export default function AssistantPage() {
             </p>
           </div>
 
-          <ChatWindow onAddToCart={() => {}} />
+          <ChatWindow
+  onAddToCart={() => {
+    window.location.href = "/recommendations";
+  }}
+/>
         </div>
       </div>
     </AppShell>
