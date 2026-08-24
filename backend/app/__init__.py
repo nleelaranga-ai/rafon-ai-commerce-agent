@@ -1,0 +1,1 @@
+"""RAFON AI backend application."""
