@@ -17,83 +17,145 @@ class GeminiService:
         message: str,
         catalog: list[dict[str, Any]],
     ) -> dict[str, Any]:
+
         if not self.api_key:
-            raise RuntimeError("GEMINI_API_KEY is not configured")
+            raise RuntimeError(
+                "GEMINI_API_KEY is missing from Render environment variables."
+            )
 
         prompt = self._build_prompt(message, catalog)
 
         url = (
-            "https://generativelanguage.googleapis.com/v1beta/models/"
-            f"{self.MODEL}:generateContent"
+            "https://generativelanguage.googleapis.com/v1beta/"
+            f"models/{self.MODEL}:generateContent"
         )
 
         payload = {
             "contents": [
                 {
+                    "role": "user",
                     "parts": [
                         {
                             "text": prompt,
                         }
-                    ]
+                    ],
                 }
             ],
             "generationConfig": {
-                "temperature": 0.2,
+                "temperature": 0.15,
                 "responseMimeType": "application/json",
+                "responseSchema": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "reply": {
+                            "type": "STRING",
+                        },
+                        "intent": {
+                            "type": "STRING",
+                        },
+                        "budget": {
+                            "type": "INTEGER",
+                        },
+                        "requirements": {
+                            "type": "ARRAY",
+                            "items": {
+                                "type": "STRING",
+                            },
+                        },
+                        "recommended_product_id": {
+                            "type": "STRING",
+                        },
+                        "recommendation_reason": {
+                            "type": "STRING",
+                        },
+                        "upsell_product_id": {
+                            "type": "STRING",
+                        },
+                        "confidence": {
+                            "type": "NUMBER",
+                        },
+                    },
+                    "required": [
+                        "reply",
+                        "intent",
+                        "requirements",
+                        "confidence",
+                    ],
+                },
             },
         }
 
-        params = {
-            "key": self.api_key,
+        headers = {
+            "x-goog-api-key": self.api_key,
+            "Content-Type": "application/json",
         }
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(
-                url,
-                params=params,
-                json=payload,
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(
+                    url,
+                    headers=headers,
+                    json=payload,
+                )
+
+        except httpx.TimeoutException as exc:
+            raise RuntimeError(
+                "Gemini request timed out after 30 seconds."
+            ) from exc
+
+        except httpx.RequestError as exc:
+            raise RuntimeError(
+                f"Could not reach Gemini API: {exc}"
+            ) from exc
+
+        if response.status_code >= 400:
+            raise RuntimeError(
+                f"Gemini API returned HTTP {response.status_code}: "
+                f"{response.text}"
             )
 
-        response.raise_for_status()
-
-        body = response.json()
+        try:
+            body = response.json()
+        except ValueError as exc:
+            raise RuntimeError(
+                "Gemini returned a non-JSON HTTP response."
+            ) from exc
 
         text = self._extract_text(body)
 
         try:
-            result = json.loads(text)
+            return json.loads(text)
         except json.JSONDecodeError as exc:
             raise RuntimeError(
-                "Gemini returned invalid JSON"
+                f"Gemini returned invalid JSON: {text}"
             ) from exc
-
-        return result
 
     def _build_prompt(
         self,
         message: str,
         catalog: list[dict[str, Any]],
     ) -> str:
+
         catalog_json = json.dumps(
             catalog,
             ensure_ascii=False,
         )
 
         return f"""
-You are RAFON AI, an autonomous commerce assistant for an electronics merchant.
+You are RAFON AI, an autonomous commerce assistant for Apex Electronics.
 
-Your task is to understand a customer's shopping request and select the best
-product from the supplied merchant catalog.
+Your job is to understand a customer's shopping request and select the best
+product from the merchant catalog.
 
-Important rules:
-1. Never invent a product.
-2. Only recommend products present in the catalog.
-3. Respect the customer's stated budget.
-4. Extract useful shopping requirements.
-5. Recommend an optional complementary upsell only if it is genuinely relevant.
-6. Do not perform payment actions.
-7. Return ONLY valid JSON.
-8. confidence must be between 0 and 1.
+Rules:
+1. Never invent products.
+2. Only recommend products from the catalog.
+3. Never recommend above the customer's explicit budget.
+4. Extract meaningful shopping requirements.
+5. An upsell must be relevant and complementary.
+6. Never claim that payment has happened.
+7. Never execute a payment.
+8. Return only JSON matching the provided schema.
 
 Customer request:
 {message}
@@ -101,37 +163,48 @@ Customer request:
 Merchant catalog:
 {catalog_json}
 
-Return exactly this JSON structure:
+For:
+"I need wireless earbuds for gaming under ₹6000."
 
-{{
-  "reply": "A concise customer-facing explanation",
-  "intent": "short intent label",
-  "budget": 6000,
-  "requirements": ["gaming", "low_latency"],
-  "recommended_product_id": "product-id",
-  "recommendation_reason": "Why this product matches",
-  "upsell_product_id": "product-id-or-null",
-  "confidence": 0.98
-}}
+Prioritize:
+- gaming use case
+- low latency
+- explicit budget
+- product relevance
+- customer value
+
+Return the best commerce decision.
 """.strip()
 
     @staticmethod
-    def _extract_text(body: dict[str, Any]) -> str:
-        candidates = body.get("candidates", [])
+    def _extract_text(
+        body: dict[str, Any],
+    ) -> str:
+
+        candidates = body.get("candidates")
 
         if not candidates:
-            raise RuntimeError("Gemini returned no candidates")
+            raise RuntimeError(
+                f"Gemini returned no candidates: {body}"
+            )
 
-        content = candidates[0].get("content", {})
-        parts = content.get("parts", [])
+        parts = (
+            candidates[0]
+            .get("content", {})
+            .get("parts", [])
+        )
 
         if not parts:
-            raise RuntimeError("Gemini returned no content")
+            raise RuntimeError(
+                f"Gemini returned no content parts: {body}"
+            )
 
         text = parts[0].get("text")
 
         if not text:
-            raise RuntimeError("Gemini returned empty text")
+            raise RuntimeError(
+                f"Gemini returned empty text: {body}"
+            )
 
         return text
 
