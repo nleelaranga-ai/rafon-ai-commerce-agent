@@ -10,3 +10,6 @@ class Product(BaseModel):
     match_score: float | None = Field(default=None, ge=0, le=100)
     specs: list[str]
     icon: str
+    inventory: int = Field(default=15, ge=0)
+    tag: str | None = None
+

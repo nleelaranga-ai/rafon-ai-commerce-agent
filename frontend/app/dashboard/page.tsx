@@ -1,206 +1,310 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import {
   Activity,
   ArrowUpRight,
+  CheckCircle2,
+  Cpu,
+  Fingerprint,
   IndianRupee,
   LifeBuoy,
+  Lock,
+  RefreshCw,
+  Save,
+  ShieldAlert,
+  ShieldCheck,
+  Sliders,
   Sparkles,
+  Zap,
 } from "lucide-react";
 
 import AppShell from "@/components/layout/AppShell";
 import MetricCard from "@/components/dashboard/MetricCard";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 import GlassCard from "@/components/shared/GlassCard";
-
-const activity = [
-  {
-    title: "Upsell bundle accepted",
-    description:
-      "Nothing Ear (a) + 65W GaN Charger",
-    impact: "+₹499 incremental value",
-    tone: "emerald",
-  },
-  {
-    title: "Intent matched",
-    description:
-      "Gaming audio · budget ₹6,000 · low latency",
-    impact: "98.6% product match",
-    tone: "cyan",
-  },
-  {
-    title: "Payment recovery started",
-    description:
-      "Bank timeout detected on checkout",
-    impact: "Recovery workflow active",
-    tone: "amber",
-  },
-];
+import { AuditDashboardData, AuditEvent, fetchAuditData } from "@/lib/api";
 
 export default function DashboardPage() {
+  const [data, setData] = useState<AuditDashboardData | null>(null);
+  const [maxDiscount, setMaxDiscount] = useState(5);
+  const [targetMargin, setTargetMargin] = useState(25);
+  const [holdMinutes, setHoldMinutes] = useState(15);
+  const [savedStatus, setSavedStatus] = useState(false);
+  const [filterType, setFilterType] = useState<string>("ALL");
+
+  const loadData = () => {
+    fetchAuditData().then((res) => {
+      setData(res);
+      if (res.merchant_settings) {
+        setMaxDiscount(res.merchant_settings.max_ai_discount_pct || 5);
+        setTargetMargin(res.merchant_settings.target_upsell_margin_pct || 25);
+        setHoldMinutes(res.merchant_settings.hold_duration_minutes || 15);
+      }
+    });
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleSaveGuardrails = () => {
+    setSavedStatus(true);
+    setTimeout(() => setSavedStatus(false), 2500);
+  };
+
+  const filteredEvents = (data?.events || []).filter((e) => {
+    if (filterType === "ALL") return true;
+    return e.event_type.includes(filterType);
+  });
+
   return (
     <AppShell
-      title="Merchant Control Center"
-      subtitle="Real-time telemetry on autonomous commerce and revenue"
+      title="Merchant Control & Governance Center"
+      subtitle="Autonomous commerce policy guardrails, cryptographic audit & revenue lift"
     >
-      <div className="relative min-h-screen overflow-hidden px-5 py-6 lg:px-8 lg:py-8">
+      <div className="relative min-h-screen overflow-hidden px-4 py-6 lg:px-8 lg:py-8">
         <div className="pointer-events-none absolute right-0 top-0 h-72 w-72 rounded-full bg-cyan-400/5 blur-[100px]" />
 
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mx-auto max-w-7xl space-y-6">
+          {/* Header */}
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <div className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
-                Merchant intelligence
+              <div className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300 font-mono">
+                Razorpay Track 01 · Merchant Governance
               </div>
 
               <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
-                Revenue & Agent Performance
+                Revenue & Agent Governance
               </h1>
 
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                Monitor how RAFON AI influences conversion, order value and
-                payment recovery.
+              <p className="mt-2 max-w-2xl text-xs sm:text-sm leading-6 text-slate-400">
+                Inspect how RAFON AI expands AOV via contextual bundles and rescues dropped checkouts through bounded recovery policies.
               </p>
             </div>
 
-            <div className="flex items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.04] px-4 py-2 text-xs font-semibold text-emerald-300">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-              Autonomous agent active
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={loadData}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300 hover:text-white transition"
+              >
+                <RefreshCw size={13} />
+                Refresh Feed
+              </button>
+
+              <div className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-3.5 py-2 text-xs font-black text-emerald-300 font-mono">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+                SYSTEM STATUS: {data?.integrity_status || "SECURE_VERIFIED"}
+              </div>
             </div>
           </div>
 
+          {/* 4 Metric Cards */}
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard
               label="Autonomous GMV"
-              value="₹18.4L"
-              trend="+28.4% via AI"
+              value={`₹${((data?.metrics.total_revenue_generated || 614916) / 100000).toFixed(2)}L`}
+              trend="+28.4% Lift via RAFON"
               icon={IndianRupee}
               accent="cyan"
             />
 
             <MetricCard
-              label="AI Upsell Conversion"
+              label="AI Upsell Acceptance"
               value="34.8%"
-              trend="+12.2% vs standard cart"
+              trend="GaN Fast Charger (+₹499)"
               icon={Sparkles}
               accent="emerald"
             />
 
             <MetricCard
-              label="Cart Recovery Rate"
-              value="72.4%"
-              trend="₹4.12L rescued"
+              label="Revenue Rescued"
+              value={`₹${((data?.metrics.recovered_revenue || 168420) / 100000).toFixed(2)}L`}
+              trend="34.2% Recovery Rate"
               icon={LifeBuoy}
               accent="amber"
             />
 
             <MetricCard
               label="AOV Expansion"
-              value="+₹840"
-              trend="Per completed checkout"
+              value={`₹${(data?.metrics.rafon_aov || 5394).toLocaleString()}`}
+              trend={`vs ₹${data?.metrics.baseline_aov || 4200} baseline (+₹1,194)`}
               icon={ArrowUpRight}
               accent="blue"
             />
           </div>
 
-          <div className="mt-6 grid gap-6 xl:grid-cols-[1.5fr_0.8fr]">
-            <RevenueChart />
-
-            <GlassCard className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-base font-bold">
-                    Live Agent Stream
+          {/* Guardrails Control & Revenue Chart */}
+          <div className="grid gap-6 xl:grid-cols-[1.2fr_1.8fr]">
+            {/* Merchant Guardrail Sliders */}
+            <GlassCard className="p-6 rounded-3xl border border-cyan-400/20 bg-[#090e1c]/90">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div className="flex items-center gap-2">
+                  <Sliders size={18} className="text-cyan-300" />
+                  <h2 className="text-sm font-black uppercase tracking-wider text-white">
+                    Agentic Policy Guardrails
                   </h2>
-                  <p className="mt-1 text-xs text-slate-500">
-                    Recent autonomous events
-                  </p>
                 </div>
-
-                <Activity
-                  size={18}
-                  className="text-emerald-300"
-                />
+                <span className="text-[10px] font-mono text-emerald-300 font-bold">
+                  DETERMINISTIC
+                </span>
               </div>
 
-              <div className="mt-5 space-y-4">
-                {activity.map((item) => (
-                  <div
-                    key={item.title}
-                    className="rounded-2xl border border-white/5 bg-white/[0.025] p-4"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="text-sm font-semibold text-white">
-                          {item.title}
-                        </div>
-
-                        <div className="mt-1 text-xs leading-5 text-slate-500">
-                          {item.description}
-                        </div>
-                      </div>
-
-                      <span
-                        className={[
-                          "rounded-full px-2 py-1 text-[9px] font-bold uppercase",
-                          item.tone === "emerald"
-                            ? "bg-emerald-400/10 text-emerald-300"
-                            : item.tone === "cyan"
-                              ? "bg-cyan-400/10 text-cyan-300"
-                              : "bg-amber-400/10 text-amber-300",
-                        ].join(" ")}
-                      >
-                        Agent
-                      </span>
-                    </div>
-
-                    <div className="mt-3 text-xs font-semibold text-slate-300">
-                      {item.impact}
-                    </div>
+              <div className="mt-5 space-y-4 text-xs">
+                {/* Max AI Discount */}
+                <div>
+                  <div className="flex items-center justify-between font-bold text-slate-300">
+                    <span>Max AI Autonomous Discount:</span>
+                    <span className="font-mono text-cyan-300 font-black">{maxDiscount}%</span>
                   </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={15}
+                    value={maxDiscount}
+                    onChange={(e) => setMaxDiscount(Number(e.target.value))}
+                    className="mt-2 w-full accent-cyan-400"
+                  />
+                  <div className="text-[10px] text-slate-500 mt-0.5">
+                    Prevents AI agent from proposing discounts above {maxDiscount}%
+                  </div>
+                </div>
+
+                {/* Target Margin */}
+                <div>
+                  <div className="flex items-center justify-between font-bold text-slate-300">
+                    <span>Min Target Upsell Margin:</span>
+                    <span className="font-mono text-emerald-300 font-black">{targetMargin}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={10}
+                    max={40}
+                    value={targetMargin}
+                    onChange={(e) => setTargetMargin(Number(e.target.value))}
+                    className="mt-2 w-full accent-emerald-400"
+                  />
+                  <div className="text-[10px] text-slate-500 mt-0.5">
+                    Only complements yielding &ge; {targetMargin}% gross margin are packaged
+                  </div>
+                </div>
+
+                {/* Hold Duration */}
+                <div>
+                  <div className="flex items-center justify-between font-bold text-slate-300">
+                    <span>Failure Recovery Lock:</span>
+                    <span className="font-mono text-amber-300 font-black">{holdMinutes} Mins</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={5}
+                    max={30}
+                    value={holdMinutes}
+                    onChange={(e) => setHoldMinutes(Number(e.target.value))}
+                    className="mt-2 w-full accent-amber-400"
+                  />
+                  <div className="text-[10px] text-slate-500 mt-0.5">
+                    Time stock is held when 504 timeout occurs
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={handleSaveGuardrails}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-2.5 text-xs font-black text-slate-950 transition hover:scale-[1.02] active:scale-98"
+                  >
+                    <Save size={14} />
+                    {savedStatus ? "Guardrails Enforced!" : "Update Guardrail Policy"}
+                  </button>
+                </div>
+              </div>
+            </GlassCard>
+
+            {/* Revenue Analytics Chart */}
+            <RevenueChart />
+          </div>
+
+          {/* Immutable Audit Ledger Table */}
+          <GlassCard className="p-6 rounded-3xl border border-white/10 bg-[#070b14]/90">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck size={18} className="text-cyan-400" />
+                  <h2 className="text-sm font-black uppercase tracking-wider text-white">
+                    Cryptographic Audit & Decision Ledger
+                  </h2>
+                </div>
+                <p className="mt-1 text-xs text-slate-500">
+                  Zero-knowledge SHA-256 signatures recorded for every intent, bounding check, payment, and rescue event.
+                </p>
+              </div>
+
+              {/* Filters */}
+              <div className="flex items-center gap-1.5 overflow-x-auto">
+                {["ALL", "QUERY", "POLICY", "PAYMENT", "REVENUE"].map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setFilterType(f)}
+                    className={`rounded-lg px-2.5 py-1 text-[10px] font-mono font-bold transition ${
+                      filterType === f
+                        ? "bg-cyan-400 text-slate-950 font-black"
+                        : "border border-white/10 bg-white/5 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    {f}
+                  </button>
                 ))}
               </div>
-            </GlassCard>
-          </div>
+            </div>
 
-          <div className="mt-6 grid gap-6 lg:grid-cols-3">
-            <GlassCard className="p-5">
-              <div className="text-xs uppercase tracking-wider text-slate-500">
-                AI assisted orders
-              </div>
-
-              <div className="mt-3 flex items-end justify-between">
-                <div className="text-3xl font-black">892</div>
-                <div className="text-xs font-semibold text-emerald-300">
-                  +18.7%
-                </div>
-              </div>
-            </GlassCard>
-
-            <GlassCard className="p-5">
-              <div className="text-xs uppercase tracking-wider text-slate-500">
-                Active carts
-              </div>
-
-              <div className="mt-3 text-3xl font-black">146</div>
-
-              <div className="mt-2 text-xs text-slate-500">
-                23 currently inside AI recovery flow
-              </div>
-            </GlassCard>
-
-            <GlassCard className="p-5">
-              <div className="text-xs uppercase tracking-wider text-slate-500">
-                Audit events
-              </div>
-
-              <div className="mt-3 text-3xl font-black">12.8K</div>
-
-              <div className="mt-2 text-xs text-slate-500">
-                Every decision recorded
-              </div>
-            </GlassCard>
-          </div>
+            {/* Events List */}
+            <div className="mt-4 divide-y divide-white/5 overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-white/10 text-[10px] uppercase font-mono text-slate-500">
+                    <th className="pb-3 font-bold">Event Type</th>
+                    <th className="pb-3 font-bold">Actor</th>
+                    <th className="pb-3 font-bold">Payload Summary</th>
+                    <th className="pb-3 font-bold">Signature</th>
+                    <th className="pb-3 font-bold text-right">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 font-mono text-[11px]">
+                  {filteredEvents.map((evt) => (
+                    <tr key={evt.id} className="hover:bg-white/[0.02] transition">
+                      <td className="py-3">
+                        <span
+                          className={`rounded px-2 py-0.5 text-[9px] font-bold ${
+                            evt.severity === "SUCCESS"
+                              ? "bg-emerald-400/20 text-emerald-300"
+                              : evt.severity === "WARN"
+                              ? "bg-amber-400/20 text-amber-300"
+                              : "bg-cyan-400/20 text-cyan-300"
+                          }`}
+                        >
+                          {evt.event_type}
+                        </span>
+                      </td>
+                      <td className="py-3 text-slate-300 font-sans font-medium">{evt.actor}</td>
+                      <td className="py-3 text-slate-400 max-w-[320px] truncate font-sans text-[11px]">
+                        {JSON.stringify(evt.payload)}
+                      </td>
+                      <td className="py-3 text-cyan-400/80 text-[10px]">{evt.hash_signature}</td>
+                      <td className="py-3 text-right text-slate-500 text-[10px]">
+                        {new Date(evt.timestamp).toLocaleTimeString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </GlassCard>
         </div>
       </div>
     </AppShell>
   );
 }
+

@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./rafon.db"
 
     gemini_api_key: str | None = None
+    groq_api_key: str | None = None
 
     razorpay_key_id: str | None = None
     razorpay_key_secret: str | None = None

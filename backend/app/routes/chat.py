@@ -1,11 +1,13 @@
-from fastapi import APIRouter, HTTPException
+import uuid
 
+from fastapi import APIRouter
+
+from app.database import CONVERSATION_STORE
 from app.schemas.chat import ChatRequest, ChatResponse
-from app.services.gemini import gemini_service
-from app.services.recommendation import (
-    build_catalog_for_ai,
-    validate_recommendation,
-)
+from app.services.ai_orchestrator import ai_orchestrator
+from app.services.audit_service import audit_service
+from app.services.policy_engine import policy_engine
+from app.services.product_service import get_all_products
 
 router = APIRouter(
     prefix="/chat",
@@ -15,73 +17,60 @@ router = APIRouter(
 
 @router.post("", response_model=ChatResponse)
 async def chat(request: ChatRequest) -> ChatResponse:
-    try:
-        result = await gemini_service.generate_commerce_decision(
-            message=request.message,
-            catalog=build_catalog_for_ai(),
-        )
+    # 1. Resolve conversation_id and trace_id
+    conversation_id = request.conversation_id or f"conv_{uuid.uuid4().hex[:8]}"
+    trace_id = f"trc_{uuid.uuid4().hex[:8]}"
 
-    except RuntimeError as exc:
-        # Expected operational failures:
-        # missing key, Gemini HTTP error, invalid Gemini response, etc.
-        raise HTTPException(
-            status_code=503,
-            detail=str(exc),
-        ) from exc
+    # 2. Retrieve conversation history
+    history = CONVERSATION_STORE.get(conversation_id, [])
 
-    except Exception as exc:
-        # IMPORTANT:
-        # Surface the actual exception during development.
-        raise HTTPException(
-            status_code=502,
-            detail=f"Unexpected AI service error: {type(exc).__name__}: {exc}",
-        ) from exc
-
-    recommendation = validate_recommendation(
-        product_id=result.get("recommended_product_id"),
-        budget=result.get("budget"),
+    # 3. Log ingest audit event
+    audit_service.log_event(
+        "QUERY_INGEST",
+        {
+            "conversation_id": conversation_id,
+            "message": request.message,
+            "cart_items_count": len(request.client_cart),
+        },
+        trace_id=trace_id,
     )
 
-    if (
-        result.get("recommended_product_id")
-        and recommendation is None
-    ):
-        result["recommended_product_id"] = None
-        result["recommendation_reason"] = (
-            "The AI suggestion failed merchant-side validation."
-        )
+    # 4. Prepare catalog
+    catalog = [p.model_dump() for p in get_all_products()]
 
-    confidence = float(
-        result.get("confidence", 0.0)
+    # 5. AI Orchestration (Gemini -> Groq -> Local Deterministic Engine)
+    raw_decision = await ai_orchestrator.orchestrate(
+        message=request.message,
+        conversation_history=history,
+        catalog=catalog,
+        trace_id=trace_id,
     )
 
-    confidence = max(
-        0.0,
-        min(1.0, confidence),
+    # 6. Deterministic Policy Bounding & Telemetry Generation
+    validated_decision, telemetry, comparison, budget_pct = (
+        policy_engine.evaluate_commerce_decision(raw_decision, trace_id)
     )
+
+    # 7. Record conversation history
+    history.append({"role": "user", "content": request.message})
+    history.append({"role": "assistant", "content": validated_decision.get("reply", "")})
+    CONVERSATION_STORE[conversation_id] = history
 
     return ChatResponse(
-        reply=result.get(
-            "reply",
-            "I found some products that may fit your request.",
-        ),
-        intent=result.get(
-            "intent",
-            "general_shopping",
-        ),
-        budget=result.get("budget"),
-        requirements=result.get(
-            "requirements",
-            [],
-        ),
-        recommended_product_id=result.get(
-            "recommended_product_id"
-        ),
-        recommendation_reason=result.get(
-            "recommendation_reason"
-        ),
-        upsell_product_id=result.get(
-            "upsell_product_id"
-        ),
-        confidence=confidence,
+        conversation_id=conversation_id,
+        reply=validated_decision.get("reply", "Here are matching recommendations from our catalog."),
+        intent=validated_decision.get("intent", "PRODUCT_DISCOVERY"),
+        budget=validated_decision.get("budget"),
+        requirements=validated_decision.get("requirements", []),
+        recommended_product_id=validated_decision.get("recommended_product_id"),
+        recommendation_reason=validated_decision.get("recommendation_reason"),
+        upsell_product_id=validated_decision.get("upsell_product_id"),
+        upsell_reason=validated_decision.get("upsell_reason"),
+        confidence=float(validated_decision.get("confidence", 0.95)),
+        telemetry=telemetry,
+        comparison=comparison,
+        action=validated_decision.get("action", "RECOMMEND"),
+        budget_utilized_percentage=budget_pct,
+        model_used=validated_decision.get("model_used", "gemini-2.5-flash"),
     )
+
