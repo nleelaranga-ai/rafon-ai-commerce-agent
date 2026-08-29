@@ -1,21 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --rafon-bg: #07080d;
-  --rafon-deep: #0b0d14;
-  --rafon-card: rgba(14, 17, 27, 0.85);
+  --fleet-bg: #07080c;
+  --fleet-deep: #0b0d13;
+  --fleet-card: rgba(13, 16, 24, 0.90);
 
-  --avoora-orange: #FF5812;
-  --avoora-orange-glow: rgba(255, 88, 18, 0.25);
-  --rafon-cyan: #00f2fe;
-  --rafon-emerald: #05ffa1;
-  --rafon-blue: #3b82f6;
+  --fleet-yellow: #f59e0b;
+  --fleet-accent: #38bdf8;
+  --fleet-emerald: #10b981;
 
-  --rafon-text: #ffffff;
-  --rafon-muted: #8e95a5;
+  --fleet-text: #ffffff;
+  --fleet-muted: #8b92a3;
 
-  --rafon-border: rgba(255, 255, 255, 0.10);
-  --rafon-border-hover: rgba(255, 255, 255, 0.25);
+  --fleet-border: rgba(255, 255, 255, 0.12);
+  --fleet-border-light: rgba(255, 255, 255, 0.22);
 }
 
 * {
@@ -24,7 +22,7 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--rafon-bg);
+  background-color: var(--fleet-bg);
 }
 
 body {
@@ -32,22 +30,22 @@ body {
   margin: 0;
   background:
     radial-gradient(
-      circle at 15% 15%,
-      rgba(255, 88, 18, 0.08),
+      circle at 10% 10%,
+      rgba(245, 158, 11, 0.05),
       transparent 35%
     ),
     radial-gradient(
-      circle at 85% 20%,
-      rgba(0, 242, 254, 0.07),
+      circle at 90% 15%,
+      rgba(56, 189, 248, 0.05),
       transparent 35%
     ),
     radial-gradient(
       circle at 50% 90%,
-      rgba(5, 255, 161, 0.06),
+      rgba(16, 185, 129, 0.04),
       transparent 40%
     ),
-    var(--rafon-bg);
-  color: var(--rafon-text);
+    var(--fleet-bg);
+  color: var(--fleet-text);
   font-family:
     Inter,
     ui-sans-serif,
@@ -57,6 +55,7 @@ body {
     "Segoe UI",
     sans-serif;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
@@ -69,94 +68,92 @@ button {
 }
 
 ::selection {
-  background: rgba(255, 88, 18, 0.35);
+  background: rgba(245, 158, 11, 0.35);
   color: #ffffff;
 }
 
-/* Avoora Signature Kinetic Rolling Button */
-.avoora-btn {
-  position: relative;
+/* Fleet Tactical UI Utilities */
+.fleet-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.fleet-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.5rem;
   padding: 0.75rem 1.4rem;
-  border-radius: 9999px;
+  border-radius: 0.5rem;
   background-color: #ffffff;
-  color: #07080d;
-  font-weight: 800;
+  color: #07080c;
+  font-weight: 700;
   font-size: 0.8125rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
+  border: 1px solid transparent;
 }
 
-.avoora-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.25);
+.fleet-btn:hover {
   background-color: #f1f3f7;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -4px rgba(255, 255, 255, 0.15);
 }
 
-.avoora-btn-orange {
-  background: linear-gradient(135deg, #FF5812, #FF7A3D);
+.fleet-btn-alt {
+  background-color: rgba(255, 255, 255, 0.06);
   color: #ffffff;
-  box-shadow: 0 8px 20px -4px var(--avoora-orange-glow);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-.avoora-btn-orange:hover {
-  box-shadow: 0 12px 28px -2px rgba(255, 88, 18, 0.45);
-  background: linear-gradient(135deg, #FF6624, #FF8A50);
+.fleet-btn-alt:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.text-roll-wrapper {
-  position: relative;
-  overflow: hidden;
-  height: 1.15em;
+.fleet-btn-yellow {
+  background-color: #f59e0b;
+  color: #07080c;
+}
+
+.fleet-btn-yellow:hover {
+  background-color: #d97706;
+}
+
+/* Plus Marker Icon */
+.plus-tag {
   display: inline-flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--fleet-muted);
 }
 
-.text-roll-item {
-  display: inline-block;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+.plus-tag::before {
+  content: "+";
+  font-weight: 800;
+  font-size: 0.875rem;
+  color: #ffffff;
 }
 
-.avoora-btn:hover .text-roll-primary {
-  transform: translateY(-100%);
+/* Glass Panels */
+.fleet-card {
+  background: var(--fleet-card);
+  border: 1px solid var(--fleet-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
-.avoora-btn:hover .text-roll-secondary {
-  transform: translateY(-100%);
+.fleet-card:hover {
+  border-color: var(--fleet-border-light);
 }
 
-.text-roll-secondary {
-  position: absolute;
-  top: 100%;
-  left: 0;
+/* Horizontal Dividers */
+.fleet-divider {
+  height: 1px;
+  width: 100%;
+  background-color: var(--fleet-border);
 }
 
-/* Glassmorphism */
-.glass-panel {
-  background: var(--rafon-card);
-  border: 1px solid var(--rafon-border);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-}
-
-.glass-panel:hover {
-  border-color: var(--rafon-border-hover);
-}
-
-.brand-orange {
-  color: var(--avoora-orange);
-}
-
-.bg-brand-orange {
-  background-color: var(--avoora-orange);
-}
-
-.border-brand-orange {
-  border-color: var(--avoora-orange);
-}
 
