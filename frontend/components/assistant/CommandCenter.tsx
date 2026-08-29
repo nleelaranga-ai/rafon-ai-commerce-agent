@@ -328,20 +328,21 @@ export default function CommandCenter() {
       {/* 3-Pane Unified Grid */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-12 flex-1">
         {/* Pane 1: Adaptive Conversational Console (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col rounded-3xl border border-white/10 bg-[#090d18]/90 backdrop-blur-xl p-5 shadow-2xl min-h-[620px]">
+        <div className="lg:col-span-5 flex flex-col rounded-3xl border border-white/10 bg-[#090b12]/95 backdrop-blur-2xl p-5 shadow-2xl min-h-[620px]">
           {/* Console Header */}
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-300 via-cyan-300 to-blue-500 text-slate-950 shadow-md shadow-cyan-400/20">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF5812] to-[#FF7A3D] text-white shadow-md shadow-[#FF5812]/20">
                 <Bot size={18} />
               </div>
               <div>
-                <div className="text-xs font-black uppercase tracking-wider text-white">
-                  RAFON Conversational Console
+                <div className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5">
+                  <span className="text-[#FF5812] font-mono">(01)</span>
+                  <span>Conversational Console</span>
                 </div>
-                <div className="text-[10px] text-cyan-300 font-mono flex items-center gap-1.5 mt-0.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  AUTONOMOUS SHOPPER
+                <div className="text-[10px] text-[#8e95a5] font-mono flex items-center gap-1.5 mt-0.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#FF5812] animate-pulse" />
+                  AUTONOMOUS SHOPPER ONLINE
                 </div>
               </div>
             </div>
@@ -368,7 +369,7 @@ export default function CommandCenter() {
                 <div
                   className={`rounded-2xl px-4 py-3 text-xs leading-relaxed max-w-[92%] ${
                     m.role === "user"
-                      ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium shadow-md shadow-cyan-500/20"
+                      ? "bg-gradient-to-r from-[#FF5812] to-orange-500 text-white font-medium shadow-md shadow-[#FF5812]/20"
                       : "border border-white/10 bg-white/[0.04] text-slate-200"
                   }`}
                 >
@@ -376,8 +377,8 @@ export default function CommandCenter() {
 
                   {/* Render Product Pick Card if present */}
                   {m.recommendedProduct && (
-                    <div className="mt-3 overflow-hidden rounded-xl border border-cyan-400/30 bg-gradient-to-b from-cyan-400/10 to-transparent p-3.5">
-                      <div className="flex items-center justify-between text-[10px] uppercase font-bold text-cyan-300 border-b border-white/10 pb-2">
+                    <div className="mt-3 overflow-hidden rounded-xl border border-[#FF5812]/30 bg-gradient-to-b from-[#FF5812]/10 to-transparent p-3.5">
+                      <div className="flex items-center justify-between text-[10px] uppercase font-bold text-[#FF5812] border-b border-white/10 pb-2">
                         <span className="flex items-center gap-1">
                           <Sparkles size={13} />
                           Autonomous Top Pick
@@ -403,7 +404,7 @@ export default function CommandCenter() {
                         </div>
 
                         <div className="text-right">
-                          <div className="text-sm font-black font-mono text-cyan-300">
+                          <div className="text-sm font-black font-mono text-[#FF5812]">
                             ₹{m.recommendedProduct.price.toLocaleString()}
                           </div>
                           <div className="text-[10px] text-slate-500 line-through">
@@ -432,10 +433,10 @@ export default function CommandCenter() {
                               ]);
                             }
                           }}
-                          className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 text-[11px] font-black text-slate-950 transition hover:bg-cyan-100"
+                          className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-slate-950 transition hover:bg-[#FF5812] hover:text-white"
                         >
                           <ShoppingCart size={12} />
-                          Add to Cart
+                          Add to Basket
                         </button>
                       </div>
                     </div>
@@ -456,8 +457,8 @@ export default function CommandCenter() {
             ))}
 
             {loading && (
-              <div className="flex items-center gap-2 text-xs text-cyan-300 font-mono">
-                <span className="h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
+              <div className="flex items-center gap-2 text-xs text-[#FF5812] font-mono">
+                <span className="h-2 w-2 rounded-full bg-[#FF5812] animate-ping" />
                 <span>RAFON reasoning & policy checks in progress...</span>
               </div>
             )}
@@ -477,7 +478,7 @@ export default function CommandCenter() {
                   key={chip}
                   type="button"
                   onClick={() => handleSendMessage(chip)}
-                  className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-semibold text-slate-300 hover:border-cyan-400/40 hover:text-cyan-300 transition active:scale-95"
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-mono font-semibold text-slate-300 hover:border-[#FF5812]/50 hover:text-[#FF5812] transition active:scale-95"
                 >
                   {chip}
                 </button>
@@ -490,18 +491,18 @@ export default function CommandCenter() {
                 e.preventDefault();
                 handleSendMessage(input);
               }}
-              className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/40 p-1.5 focus-within:border-cyan-400/50"
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-black/50 p-1.5 focus-within:border-[#FF5812]"
             >
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask RAFON (e.g. Earbuds for gaming under ₹6000)..."
-                className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs text-white outline-none placeholder:text-slate-600"
+                className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs text-white outline-none placeholder:text-slate-600 font-sans"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 transition hover:scale-105 active:scale-95 disabled:opacity-50"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FF5812] text-white transition hover:scale-105 active:scale-95 disabled:opacity-50"
               >
                 <ArrowUp size={16} />
               </button>
@@ -523,16 +524,17 @@ export default function CommandCenter() {
         </div>
 
         {/* Pane 3: Reactive Smart Cart & Razorpay Checkout (3 cols) */}
-        <div className="lg:col-span-3 flex flex-col rounded-3xl border border-emerald-400/20 bg-[#090d18]/90 backdrop-blur-xl p-5 shadow-2xl">
+        <div className="lg:col-span-3 flex flex-col rounded-3xl border border-white/10 bg-[#090b12]/95 backdrop-blur-2xl p-5 shadow-2xl">
           {/* Cart Header */}
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div className="flex items-center gap-2">
-              <ShoppingCart size={17} className="text-emerald-400" />
-              <div className="text-xs font-black uppercase tracking-wider text-white">
-                Smart Basket
+              <ShoppingCart size={17} className="text-[#FF5812]" />
+              <div className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5">
+                <span className="text-[#FF5812] font-mono">(03)</span>
+                <span>Smart Basket</span>
               </div>
             </div>
-            <span className="rounded-full bg-emerald-400/10 px-2 py-0.5 text-[10px] font-bold font-mono text-emerald-300">
+            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[10px] font-bold font-mono text-emerald-300">
               {cart.length} ITEMS
             </span>
           </div>
@@ -548,7 +550,7 @@ export default function CommandCenter() {
                   <div className="font-bold text-white flex items-center gap-1.5">
                     {item.name}
                     {item.is_upsell && (
-                      <span className="rounded bg-cyan-400/20 px-1 py-0.2 text-[8px] font-mono font-bold text-cyan-300 uppercase">
+                      <span className="rounded bg-[#FF5812]/20 px-1 py-0.2 text-[8px] font-mono font-bold text-[#FF5812] uppercase">
                         Bundle
                       </span>
                     )}
@@ -576,28 +578,28 @@ export default function CommandCenter() {
 
           {/* Contextual Upsell Card */}
           {!upsellAdded && (
-            <div className="mt-3 rounded-2xl border border-cyan-400/30 bg-gradient-to-b from-cyan-400/10 to-transparent p-3 text-xs">
-              <div className="flex items-center justify-between text-[10px] uppercase font-bold text-cyan-300">
+            <div className="mt-3 rounded-2xl border border-[#FF5812]/30 bg-gradient-to-b from-[#FF5812]/10 to-transparent p-3 text-xs">
+              <div className="flex items-center justify-between text-[10px] uppercase font-bold text-[#FF5812]">
                 <span className="flex items-center gap-1">
-                  <Zap size={13} /> Contextual Upsell
+                  <Zap size={13} className="fill-[#FF5812]" /> Contextual Upsell
                 </span>
-                <span className="rounded bg-cyan-400/20 px-1.5 py-0.5 text-[8px] font-black text-cyan-300 font-mono">
+                <span className="rounded-full bg-[#FF5812]/20 px-2 py-0.5 text-[8px] font-black text-[#FF5812] font-mono">
                   SAVE ₹700
                 </span>
               </div>
               <div className="mt-2 text-xs font-bold text-white">65W GaN Fast Charger</div>
-              <div className="text-[10px] text-slate-400 mt-0.5">
+              <div className="text-[10px] text-slate-400 mt-0.5 font-mono">
                 Dual USB-C 65W PD (Laptop & Phone ready)
               </div>
               <div className="mt-2.5 flex items-center justify-between">
                 <div>
                   <span className="font-mono font-bold text-emerald-300">+₹499</span>
-                  <span className="text-[9px] text-slate-500 line-through ml-1.5">₹1,199</span>
+                  <span className="text-[9px] text-slate-500 line-through ml-1.5 font-mono">₹1,199</span>
                 </div>
                 <button
                   type="button"
                   onClick={addUpsell}
-                  className="inline-flex items-center gap-1 rounded-xl bg-cyan-400 px-2.5 py-1 text-[10px] font-black text-slate-950 transition hover:scale-105 active:scale-95"
+                  className="inline-flex items-center gap-1 rounded-full bg-[#FF5812] px-3 py-1 text-[10px] font-black text-white transition hover:scale-105 active:scale-95 shadow-md shadow-[#FF5812]/20"
                 >
                   <Plus size={12} /> Add +₹499
                 </button>
@@ -619,7 +621,7 @@ export default function CommandCenter() {
             )}
             <div className="flex items-center justify-between pt-2 border-t border-white/10 text-sm font-black">
               <span className="text-white">Total:</span>
-              <span className="font-mono text-cyan-300 text-lg">₹{total.toLocaleString()}</span>
+              <span className="font-mono text-[#FF5812] text-xl font-black">₹{total.toLocaleString()}</span>
             </div>
           </div>
 
@@ -639,15 +641,19 @@ export default function CommandCenter() {
               <button
                 type="button"
                 onClick={handleCleanCheckout}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 py-3.5 text-xs font-black text-slate-950 transition hover:scale-[1.02] active:scale-98 shadow-xl shadow-cyan-400/20"
+                className="w-full avoora-btn avoora-btn-orange justify-center py-3.5"
               >
-                <Lock size={14} />
-                Razorpay Checkout (₹{total.toLocaleString()})
+                <div className="text-roll-wrapper">
+                  <span className="text-roll-item text-roll-primary">Checkout via Razorpay (₹{total.toLocaleString()})</span>
+                  <span className="text-roll-item text-roll-secondary">Checkout via Razorpay (₹{total.toLocaleString()})</span>
+                </div>
+                <ArrowUpRight size={15} />
               </button>
             )}
           </div>
         </div>
       </div>
+
 
       {/* Collapsible Immutable Audit & Trace Inspector Dock */}
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#070b14]/90 backdrop-blur-xl">

@@ -1,19 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --rafon-bg: #06080f;
-  --rafon-deep: #090d18;
-  --rafon-card: rgba(13, 19, 36, 0.72);
+  --rafon-bg: #07080d;
+  --rafon-deep: #0b0d14;
+  --rafon-card: rgba(14, 17, 27, 0.85);
 
+  --avoora-orange: #FF5812;
+  --avoora-orange-glow: rgba(255, 88, 18, 0.25);
   --rafon-cyan: #00f2fe;
   --rafon-emerald: #05ffa1;
   --rafon-blue: #3b82f6;
-  --rafon-violet: #8b5cf6;
 
-  --rafon-text: #f8fafc;
-  --rafon-muted: #94a3b8;
+  --rafon-text: #ffffff;
+  --rafon-muted: #8e95a5;
 
-  --rafon-border: rgba(255, 255, 255, 0.08);
+  --rafon-border: rgba(255, 255, 255, 0.10);
+  --rafon-border-hover: rgba(255, 255, 255, 0.25);
 }
 
 * {
@@ -22,6 +24,7 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: var(--rafon-bg);
 }
 
 body {
@@ -29,19 +32,19 @@ body {
   margin: 0;
   background:
     radial-gradient(
-      circle at 10% 10%,
-      rgba(5, 255, 161, 0.10),
-      transparent 30%
+      circle at 15% 15%,
+      rgba(255, 88, 18, 0.08),
+      transparent 35%
     ),
     radial-gradient(
       circle at 85% 20%,
-      rgba(0, 242, 254, 0.10),
-      transparent 30%
+      rgba(0, 242, 254, 0.07),
+      transparent 35%
     ),
     radial-gradient(
-      circle at 70% 85%,
-      rgba(59, 130, 246, 0.10),
-      transparent 35%
+      circle at 50% 90%,
+      rgba(5, 255, 161, 0.06),
+      transparent 40%
     ),
     var(--rafon-bg);
   color: var(--rafon-text);
@@ -53,6 +56,7 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+  overflow-x: hidden;
 }
 
 button,
@@ -65,48 +69,94 @@ button {
 }
 
 ::selection {
-  background: rgba(0, 242, 254, 0.25);
+  background: rgba(255, 88, 18, 0.35);
+  color: #ffffff;
 }
 
-.rafon-grid {
-  background-image:
-    linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0.025) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.025) 1px,
-      transparent 1px
-    );
-  background-size: 40px 40px;
+/* Avoora Signature Kinetic Rolling Button */
+.avoora-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 1.4rem;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  color: #07080d;
+  font-weight: 800;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
 }
 
-.glass {
+.avoora-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.25);
+  background-color: #f1f3f7;
+}
+
+.avoora-btn-orange {
+  background: linear-gradient(135deg, #FF5812, #FF7A3D);
+  color: #ffffff;
+  box-shadow: 0 8px 20px -4px var(--avoora-orange-glow);
+}
+
+.avoora-btn-orange:hover {
+  box-shadow: 0 12px 28px -2px rgba(255, 88, 18, 0.45);
+  background: linear-gradient(135deg, #FF6624, #FF8A50);
+}
+
+.text-roll-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 1.15em;
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.text-roll-item {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.avoora-btn:hover .text-roll-primary {
+  transform: translateY(-100%);
+}
+
+.avoora-btn:hover .text-roll-secondary {
+  transform: translateY(-100%);
+}
+
+.text-roll-secondary {
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+
+/* Glassmorphism */
+.glass-panel {
   background: var(--rafon-card);
   border: 1px solid var(--rafon-border);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 
-.rafon-gradient {
-  background: linear-gradient(
-    135deg,
-    var(--rafon-emerald),
-    var(--rafon-cyan),
-    var(--rafon-blue)
-  );
+.glass-panel:hover {
+  border-color: var(--rafon-border-hover);
 }
 
-.text-gradient {
-  background: linear-gradient(
-    135deg,
-    var(--rafon-emerald),
-    var(--rafon-cyan),
-    var(--rafon-blue)
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.brand-orange {
+  color: var(--avoora-orange);
 }
+
+.bg-brand-orange {
+  background-color: var(--avoora-orange);
+}
+
+.border-brand-orange {
+  border-color: var(--avoora-orange);
+}
+
