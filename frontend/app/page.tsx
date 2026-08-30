@@ -44,89 +44,64 @@ import Navbar from "@/components/layout/Navbar";
 
 // Integrations Data
 const integrationList = [
-  { name: "Slack", category: "Communication", color: "#ECB22E" },
-  { name: "Discord", category: "Community", color: "#5865F2" },
-  { name: "Notion", category: "Productivity", color: "#FFFFFF" },
-  { name: "Figma", category: "Design", color: "#F24E1E" },
-  { name: "GitHub", category: "Code", color: "#FFFFFF" },
-  { name: "Linear", category: "Tracking", color: "#5E6AD2" },
-  { name: "Zapier", category: "Automation", color: "#FF4A00" },
-  { name: "OpenAI", category: "AI Models", color: "#10A37F" },
-  { name: "Google Drive", category: "Storage", color: "#4285F4" },
-  { name: "Airtable", category: "Database", color: "#18BFFF" },
-  { name: "Webflow", category: "Web", color: "#146EF5" },
-  { name: "Stripe", category: "Payments", color: "#635BFF" },
   { name: "Razorpay", category: "Payments", color: "#0C2340" },
+  { name: "Shopify", category: "Storefront", color: "#96BF48" },
+  { name: "Stripe", category: "Payments", color: "#635BFF" },
+  { name: "WooCommerce", category: "Storefront", color: "#96588A" },
+  { name: "Google Gemini", category: "AI Models", color: "#4285F4" },
+  { name: "OpenAI", category: "AI Models", color: "#10A37F" },
+  { name: "Slack", category: "Notifications", color: "#ECB22E" },
   { name: "HubSpot", category: "CRM", color: "#FF7A59" },
   { name: "Salesforce", category: "Enterprise", color: "#00A1E0" },
   { name: "Supabase", category: "Database", color: "#3ECF8E" },
   { name: "Vercel", category: "Deployment", color: "#FFFFFF" },
-  { name: "Intercom", category: "Support", color: "#1F8CED" },
+  { name: "FastAPI", category: "Backend", color: "#009688" },
 ];
 
 const testimonialsData = [
   {
-    company: "Synthora",
-    name: "Jacob Jones",
-    role: "Head of Growth at Synthora",
+    company: "Pulse Audio",
+    name: "Arjun Mehta",
+    role: "VP Growth at Pulse Audio",
     quote:
-      "With Fiilo’s smart automation and real-time insights, we’ve improved deal closures by 35% in just two months.",
-    stat1: "$100K",
-    stat1Text: "Increase sales revenue",
-    stat2: "90%",
-    stat2Text: "Boost team efficiency",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
-  },
-  {
-    company: "Loopbit",
-    name: "Sarah Jenkins",
-    role: "VP Revenue Operations at Loopbit",
-    quote:
-      "The zero-hallucination policy bounding gave our enterprise sales team 100% confidence to let AI handle custom pricing negotiations.",
-    stat1: "4.8x",
-    stat1Text: "Faster deal velocity",
-    stat2: "99.9%",
-    stat2Text: "Policy compliance",
-    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
-  },
-  {
-    company: "Nexivo",
-    name: "Marcus Vance",
-    role: "Chief Commercial Officer at Nexivo",
-    quote:
-      "The 15-minute autonomous cart recovery alone recovered over $45,000 in dropped checkouts during our Q4 product drop.",
-    stat1: "+34.2%",
-    stat1Text: "Checkout recovery rate",
-    stat2: "15 Min",
-    stat2Text: "Autonomous hold",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
-  },
-  {
-    company: "Infera",
-    name: "Elena Rostova",
-    role: "Product Lead at Infera AI",
-    quote:
-      "Fiilo’s multi-agent orchestration seamlessly bridges natural language customer intent with instant inventory availability.",
-    stat1: "42ms",
-    stat1Text: "Average latency",
+      "With RAFON AI’s autonomous upsell engine and intent matching, our average order value expanded by 28.4% with zero checkout friction.",
+    stat1: "₹18.4L",
+    stat1Text: "Autonomous GMV",
     stat2: "+28.4%",
-    stat2Text: "AOV expansion",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+    stat2Text: "AOV Expansion",
+  },
+  {
+    company: "NexTech Electronics",
+    name: "Rohan Verma",
+    role: "Head of E-Commerce at NexTech",
+    quote:
+      "The deterministic policy bounding gave our team 100% peace of mind. The AI strictly respects our ₹6,000 budget cap and 5% max discount.",
+    stat1: "100%",
+    stat1Text: "Policy Compliance",
+    stat2: "45ms",
+    stat2Text: "Avg Latency",
+  },
+  {
+    company: "Volt Gear",
+    name: "Priya Sharma",
+    role: "Lead Operations at Volt Gear",
+    quote:
+      "The 15-minute autonomous cart recovery saved over ₹4.2 Lakhs during our flash sale when payment gateway timeouts occurred.",
+    stat1: "+34.2%",
+    stat1Text: "Cart Recovery Rate",
+    stat2: "15 Min",
+    stat2Text: "Autonomous Hold",
   },
 ];
 
 const faqs = [
   {
-    q: "How does Fiilo prevent AI hallucinations during checkout?",
-    a: "Fiilo uses a deterministic Policy Engine that operates outside LLM inference. All price boundaries, discount caps (≤ 5%), budget limits (≤ ₹6,000), and inventory checks are mathematically validated before any checkout payload is generated.",
+    q: "How does RAFON AI prevent AI hallucinations during checkout?",
+    a: "RAFON AI uses a deterministic Policy Engine that operates outside LLM inference. All price boundaries, discount caps (≤ 5%), budget limits (≤ ₹6,000), and inventory checks are mathematically validated before any checkout payload is generated.",
   },
   {
     q: "What happens when a payment gateway encounters a 504 timeout?",
     a: "Our Autonomous Recovery Engine (RF-REC-02) instantly traps the failure event, places an isolated 15-minute hold on the selected inventory, and generates an emergency rescue code (e.g. RESCUE5) to recover the transaction seamlessly.",
-  },
-  {
-    q: "Can Fiilo integrate with our existing CRM and ERP stack?",
-    a: "Yes. Fiilo provides out-of-the-box native integrations with HubSpot, Salesforce, Linear, Slack, Stripe, Razorpay, and custom REST/GraphQL endpoints via secure webhooks.",
   },
   {
     q: "How does the Contextual Upsell Multiplier work?",
@@ -137,8 +112,12 @@ const faqs = [
     a: "Yes. Every reasoning trace, intent extraction, policy boundary check, and order dispatch is hashed into a tamper-proof SHA-256 cryptographic audit ledger with a unique trace ID.",
   },
   {
-    q: "How long does it take to deploy Fiilo?",
-    a: "You can embed the Fiilo AI Shopping Console widget in less than 5 minutes using our drop-in React/Next.js components or standard iframe embed.",
+    q: "How does Razorpay HMAC verification work?",
+    a: "Every order generated by RAFON AI creates a server-side Razorpay order ID. Upon payment completion, Razorpay signatures are cryptographically verified using HMAC SHA-256 before inventory is decremented.",
+  },
+  {
+    q: "Can RAFON AI operate with multiple LLM providers?",
+    a: "Yes. RAFON features a multi-provider fallback orchestrator supporting Google Gemini 2.5 Flash, Groq LLaMA 3.3 70B, and local rule-based bounding engines for guaranteed 99.99% uptime.",
   },
 ];
 
@@ -163,41 +142,42 @@ export default function HomePage() {
         {/* SECTION 1: HERO SECTION */}
         {/* ========================================================================= */}
         <section className="mx-auto max-w-6xl px-4 pt-16 pb-24 text-center lg:pt-24">
-          {/* New Feature Tag */}
+          {/* Track 01 Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1.5 text-xs font-semibold text-purple-300 backdrop-blur-md">
             <span className="rounded-full bg-purple-500 px-2 py-0.5 text-[10px] font-black text-white uppercase">
-              New
+              Track 01
             </span>
-            <span>AI Search: Find leads your way</span>
+            <span>Razorpay AI Buildathon · Autonomous Commerce</span>
             <ChevronRight size={13} className="text-purple-400" />
           </div>
 
           {/* Massive Display Headline */}
           <h1 className="mt-8 text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08] max-w-4xl mx-auto">
-            Let AI take your sales to the{" "}
-            <span className="fiilo-gradient-text">next level</span>
+            Autonomous Commerce Intelligence for{" "}
+            <span className="fiilo-gradient-text">Modern Retail</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-6 text-base sm:text-lg text-slate-400 max-w-xl mx-auto leading-relaxed">
-            Unlock rapid growth by combining intelligent automation, real-time insights, and streamlined workflows.
+          <p className="mt-6 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            RAFON AI interprets natural shopper intent in real-time, guarantees zero-hallucination budget bounding, autonomously expands order value, and rescues dropped checkouts.
           </p>
 
           {/* CTA Buttons */}
           <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
             <Link href="/assistant" className="fiilo-btn-primary">
-              <span>Get 14 Days Free Trial</span>
+              <Bot size={16} />
+              <span>Launch Shopping Console</span>
               <ArrowRight size={16} />
             </Link>
 
             <Link href="/dashboard" className="fiilo-btn-secondary">
-              <Sparkles size={15} className="text-purple-400" />
-              <span>Explore Live Console</span>
+              <ShieldCheck size={16} className="text-purple-400" />
+              <span>Merchant Governance</span>
             </Link>
           </div>
 
           <div className="mt-4 text-xs text-slate-500 font-medium">
-            No Credit Card Required · 14-Day Full Access
+            Deterministic Policy Engine · Razorpay HMAC Verified · SHA-256 Audit Ledger
           </div>
 
           {/* Hero Floating Dashboard Mockup */}
@@ -211,11 +191,11 @@ export default function HomePage() {
                   <div className="h-3 w-3 rounded-full bg-emerald-500/80" />
                 </div>
                 <div className="rounded-full border border-white/10 bg-white/5 px-4 py-1 text-[11px] font-mono text-slate-400">
-                  fiilo.com/app/autonomous-commerce
+                  rafon.ai/app/command-center
                 </div>
                 <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                  Live 42ms
+                  Live Stream Active · 42ms
                 </div>
               </div>
 
@@ -244,7 +224,7 @@ export default function HomePage() {
                   {/* Simulated Activity Stream */}
                   <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-2.5 font-mono text-xs">
                     <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 border-b border-white/5">
-                      <span>LIVE EVENT DISPATCH</span>
+                      <span>LIVE TELEMETRY STREAM</span>
                       <span className="text-purple-400">#RF-9482</span>
                     </div>
                     <div className="text-slate-300">
@@ -263,7 +243,7 @@ export default function HomePage() {
                 <div className="lg:col-span-5 rounded-2xl border border-white/10 bg-black/40 p-4 flex flex-col justify-between">
                   <div className="space-y-2.5 text-xs">
                     <div className="rounded-xl bg-purple-600/20 border border-purple-500/30 p-3 text-purple-200">
-                      <div className="text-[10px] font-bold uppercase text-purple-400 mb-1">AI Copilot</div>
+                      <div className="text-[10px] font-bold uppercase text-purple-400 mb-1">RAFON AI Copilot</div>
                       Matched Nothing Ear (a) at ₹5,499. Would you like to bundle the 65W GaN charger for only +₹499?
                     </div>
 
@@ -286,14 +266,14 @@ export default function HomePage() {
             </div>
 
             {/* Floating Badges around Dashboard */}
-            <div className="hidden sm:flex absolute -top-6 -left-6 rounded-2xl border border-purple-500/40 bg-[#12111a]/90 px-4 py-2.5 text-xs font-bold text-white shadow-xl backdrop-blur-xl items-center gap-2 animate-bounce">
+            <div className="hidden sm:flex absolute -top-6 -left-6 rounded-2xl border border-purple-500/40 bg-[#12111a]/90 px-4 py-2.5 text-xs font-bold text-white shadow-xl backdrop-blur-xl items-center gap-2">
               <Sparkles size={14} className="text-purple-400" />
-              <span>+35% Deal Closures</span>
+              <span>+28.4% AOV Lift</span>
             </div>
 
             <div className="hidden sm:flex absolute -bottom-6 -right-6 rounded-2xl border border-emerald-500/40 bg-[#0f1712]/90 px-4 py-2.5 text-xs font-bold text-emerald-300 shadow-xl backdrop-blur-xl items-center gap-2">
               <ShieldCheck size={16} className="text-emerald-400" />
-              <span>100% Deterministic Integrity</span>
+              <span>100% Policy Integrity</span>
             </div>
           </div>
         </section>
@@ -304,33 +284,33 @@ export default function HomePage() {
         <section className="border-y border-white/10 bg-[#070709]/80 py-12 overflow-hidden">
           <div className="mx-auto max-w-6xl px-4 text-center">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-              Trusted by 25,000+ fast-growing founders & commerce leaders
+              Powering Modern D2C Brands & Commerce Leaders
             </p>
 
             {/* Marquee with Fade Edges */}
             <div className="relative mt-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
               <div className="animate-marquee gap-12 text-lg font-black text-slate-500 uppercase tracking-wider">
                 {[
-                  "Synthora",
-                  "Loopbit",
-                  "Nexivo",
-                  "Infera",
-                  "Braina",
-                  "Stripe",
                   "Razorpay",
-                  "Linear",
-                  "Vercel",
+                  "Shopify",
+                  "Stripe",
+                  "WooCommerce",
+                  "Google Gemini",
+                  "OpenAI",
+                  "Nothing",
+                  "Boat",
+                  "OnePlus",
                   "Supabase",
-                  "Notion",
-                  "Synthora",
-                  "Loopbit",
-                  "Nexivo",
-                  "Infera",
-                  "Braina",
-                  "Stripe",
-                  "Razorpay",
-                  "Linear",
                   "Vercel",
+                  "Razorpay",
+                  "Shopify",
+                  "Stripe",
+                  "WooCommerce",
+                  "Google Gemini",
+                  "OpenAI",
+                  "Nothing",
+                  "Boat",
+                  "OnePlus",
                 ].map((brand, i) => (
                   <div
                     key={i}
@@ -352,13 +332,13 @@ export default function HomePage() {
           <div className="text-center space-y-3 max-w-2xl mx-auto mb-16">
             <div className="fiilo-badge">
               <Cpu size={14} />
-              <span>Sales AI Copilot · Free & Pro</span>
+              <span>Core Architecture · Track 01</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-              Sales Made Simple with AI
+              Engineered for Merchant Revenue & Trust
             </h2>
             <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-              Sales made simple with AI means smarter decisions, faster results, and zero monetary hallucinations.
+              Autonomous commerce intelligence built for AOV expansion, deterministic policy bounding, and failure resilience.
             </p>
           </div>
 
@@ -367,56 +347,56 @@ export default function HomePage() {
             {/* Card 1 */}
             <div className="fiilo-card p-7 space-y-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
-                <Workflow size={22} />
+                <Sparkles size={22} />
               </div>
-              <h3 className="text-lg font-bold text-white">Task & Activity Management</h3>
+              <h3 className="text-lg font-bold text-white">Semantic Intent Discovery</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Assign, schedule, and track daily sales tasks effortlessly with AI automation triggers.
+                Interprets multi-turn conversational queries into strict low-latency catalog parameters (e.g. 45ms gaming mode).
               </p>
               <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-[11px] font-mono text-purple-300">
-                ✓ Auto-sync to CRM pipeline
+                ✓ 45ms Intent Mapping
               </div>
             </div>
 
             {/* Card 2 */}
             <div className="fiilo-card p-7 space-y-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
-                <Repeat size={22} />
+                <ShieldCheck size={22} />
               </div>
-              <h3 className="text-lg font-bold text-white">Connect Tools & CRMs</h3>
+              <h3 className="text-lg font-bold text-white">Deterministic Policy Bounding</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Seamlessly pipe real-time conversation data directly into Slack, HubSpot, and Stripe.
+                Enforces mathematical financial guardrails: max 5% discount, price ≤ budget, and zero hallucination.
               </p>
               <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-[11px] font-mono text-cyan-300">
-                ✓ 30+ instant webhook connectors
+                ✓ Max 5% Discount Cap
               </div>
             </div>
 
             {/* Card 3 */}
             <div className="fiilo-card p-7 space-y-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-400">
-                <ShieldCheck size={22} />
+                <TrendingUp size={22} />
               </div>
-              <h3 className="text-lg font-bold text-white">Role-Based Access Control</h3>
+              <h3 className="text-lg font-bold text-white">Contextual Upsell Multiplier</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Ensure strict enterprise compliance with mathematical discount and budget boundaries.
+                Recommends margin-aware accessories (like 65W GaN Charger) that fit within remaining shopper budget.
               </p>
               <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-[11px] font-mono text-pink-300">
-                ✓ Max 5% autonomous discount cap
+                ✓ +28.4% Average AOV Lift
               </div>
             </div>
 
             {/* Card 4 */}
             <div className="fiilo-card p-7 space-y-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
-                <Users size={22} />
+                <RotateCcw size={22} />
               </div>
-              <h3 className="text-lg font-bold text-white">Track Sales Contacts</h3>
+              <h3 className="text-lg font-bold text-white">15-Min Autonomous Cart Recovery</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Easily monitor and manage all sales interactions, intent history, and customer lifetime value.
+                RF-REC-02 protocol isolates stock for 15 minutes during 504 payment gateway drops with rescue vouchers.
               </p>
               <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-[11px] font-mono text-amber-300">
-                ✓ Multi-turn shopper memory
+                ✓ 34.2% Rescued Checkouts
               </div>
             </div>
 
@@ -425,9 +405,9 @@ export default function HomePage() {
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
                 <CreditCard size={22} />
               </div>
-              <h3 className="text-lg font-bold text-white">Automated Razorpay Settlement</h3>
+              <h3 className="text-lg font-bold text-white">One-Click Razorpay Settlement</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Generate instant verified orders with HMAC SHA-256 webhook signatures and zero friction.
+                Generates server-side Razorpay orders with cryptographic HMAC SHA-256 webhook signature validation.
               </p>
               <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-[11px] font-mono text-emerald-300">
                 ✓ Razorpay Orders & HMAC Verified
@@ -437,14 +417,14 @@ export default function HomePage() {
             {/* Card 6 */}
             <div className="fiilo-card p-7 space-y-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-                <TrendingUp size={22} />
+                <Database size={22} />
               </div>
-              <h3 className="text-lg font-bold text-white">Monthly Revenue Analytics</h3>
+              <h3 className="text-lg font-bold text-white">Cryptographic Audit Ledger</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Gain clear insights into AI-driven basket expansion, upsell acceptance, and rescued GMV.
+                Every reasoning step, parameter extraction, and boundary check is immutably hashed with SHA-256.
               </p>
               <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-[11px] font-mono text-blue-300">
-                ✓ +28.4% average basket lift
+                ✓ SHA-256 Tamper-Proof Trail
               </div>
             </div>
           </div>
@@ -463,11 +443,11 @@ export default function HomePage() {
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-                Automate complex sales actions with visual nodes
+                Automate complex commerce actions with visual nodes
               </h2>
 
               <p className="text-sm text-slate-400 leading-relaxed">
-                Connect your customer channels directly to deterministic AI agents. When a shopper asks for budget-constrained gear, Fiilo executes instant evaluation, stock bounding, and checkout fulfillment automatically.
+                Connect your customer channels directly to deterministic AI agents. When a shopper asks for budget-constrained gear, RAFON AI executes instant evaluation, stock bounding, and checkout fulfillment automatically.
               </p>
 
               <div className="space-y-3 pt-2">
@@ -481,7 +461,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex items-center gap-3 text-xs text-slate-300">
                   <CheckCircle2 size={16} className="text-purple-400" />
-                  <span>Autonomous 15-minute failure recovery</span>
+                  <span>Autonomous 15-minute failure recovery (RF-REC-02)</span>
                 </div>
               </div>
             </div>
@@ -556,13 +536,13 @@ export default function HomePage() {
           <div className="text-center space-y-3 max-w-2xl mx-auto mb-16">
             <div className="fiilo-badge">
               <Globe size={14} />
-              <span>30+ Native Integrations</span>
+              <span>Native Commerce Ecosystem</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
               Connects with Your Whole Stack
             </h2>
             <p className="text-sm text-slate-400">
-              Integrate with your favorite CRMs, communications tools, databases, and payment processors in minutes.
+              Integrate with your storefront, payment gateways, CRM, and communication tools in minutes.
             </p>
           </div>
 
@@ -597,7 +577,7 @@ export default function HomePage() {
               <span>Simple 5-Step Process</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-              How Fiilo Powers Autonomous Commerce
+              How RAFON AI Powers Autonomous Commerce
             </h2>
           </div>
 
@@ -624,20 +604,20 @@ export default function HomePage() {
         <section className="mx-auto max-w-6xl px-4 py-16 border-t border-white/10">
           <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
             <div className="fiilo-card p-6 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-white font-mono">50K+</div>
-              <div className="text-xs text-slate-400 mt-1 font-semibold">Active Founders</div>
+              <div className="text-3xl sm:text-4xl font-black text-white font-mono">₹18.4L</div>
+              <div className="text-xs text-slate-400 mt-1 font-semibold">Autonomous GMV</div>
             </div>
             <div className="fiilo-card p-6 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-purple-400 font-mono">99.9%</div>
-              <div className="text-xs text-slate-400 mt-1 font-semibold">Policy Accuracy</div>
+              <div className="text-3xl sm:text-4xl font-black text-purple-400 font-mono">+28.4%</div>
+              <div className="text-xs text-slate-400 mt-1 font-semibold">Average AOV Lift</div>
             </div>
             <div className="fiilo-card p-6 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-cyan-400 font-mono">120+</div>
-              <div className="text-xs text-slate-400 mt-1 font-semibold">Native Integrations</div>
+              <div className="text-3xl sm:text-4xl font-black text-cyan-400 font-mono">34.2%</div>
+              <div className="text-xs text-slate-400 mt-1 font-semibold">Rescued Checkouts</div>
             </div>
             <div className="fiilo-card p-6 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-emerald-400 font-mono">8M+</div>
-              <div className="text-xs text-slate-400 mt-1 font-semibold">Automated Actions</div>
+              <div className="text-3xl sm:text-4xl font-black text-emerald-400 font-mono">100%</div>
+              <div className="text-xs text-slate-400 mt-1 font-semibold">Policy Integrity</div>
             </div>
           </div>
         </section>
@@ -649,10 +629,10 @@ export default function HomePage() {
           <div className="text-center space-y-3 max-w-2xl mx-auto mb-12">
             <div className="fiilo-badge">
               <Star size={14} />
-              <span>Customer Stories</span>
+              <span>Merchant Impact</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-              See why users love Fiilo
+              See why merchants trust RAFON AI
             </h2>
           </div>
 
@@ -731,7 +711,7 @@ export default function HomePage() {
               <span>Transparent Pricing</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-              Flexible Plans for Growing Teams
+              Flexible Plans for Growing Merchants
             </h2>
 
             {/* Monthly / Yearly Switch */}
@@ -766,7 +746,7 @@ export default function HomePage() {
                 <div className="text-sm font-bold text-slate-400 uppercase tracking-wider">Starter</div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-black text-white font-mono">
-                    ${isYearly ? "22" : "29"}
+                    ₹{isYearly ? "1,999" : "2,499"}
                   </span>
                   <span className="text-xs text-slate-500">/ month</span>
                 </div>
@@ -786,7 +766,7 @@ export default function HomePage() {
 
               <div className="pt-8">
                 <Link href="/assistant" className="w-full fiilo-btn-secondary justify-center py-3 text-xs">
-                  Start Free Trial
+                  Launch Console
                 </Link>
               </div>
             </div>
@@ -794,24 +774,24 @@ export default function HomePage() {
             {/* Pro (Highlighted) */}
             <div className="fiilo-card p-8 flex flex-col justify-between relative border-purple-500 shadow-2xl shadow-purple-950/50 bg-[#120f20]">
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-1 text-[10px] font-extrabold text-white uppercase tracking-wider shadow-md">
-                Most Popular
+                Recommended for Growth
               </div>
 
               <div className="space-y-4 mt-2">
                 <div className="text-sm font-bold text-purple-400 uppercase tracking-wider">Pro Merchant</div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-black text-white font-mono">
-                    ${isYearly ? "59" : "79"}
+                    ₹{isYearly ? "4,999" : "6,499"}
                   </span>
                   <span className="text-xs text-slate-400">/ month</span>
                 </div>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  For scaling brands wanting contextual upselling and 15-minute checkout recovery.
+                  For scaling brands wanting contextual upselling (+28% AOV) and 15-minute checkout recovery.
                 </p>
 
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs">
                   {[
-                    "Unlimited AI Agents",
+                    "Unlimited AI Shopping Agents",
                     "Autonomous 15-Min Hold (RF-REC-02)",
                     "Contextual Upsell Multiplier (+28% AOV)",
                     "Cryptographic SHA-256 Audit Ledger",
@@ -839,7 +819,7 @@ export default function HomePage() {
                 <div className="text-sm font-bold text-slate-400 uppercase tracking-wider">Enterprise</div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-black text-white font-mono">
-                    ${isYearly ? "149" : "199"}
+                    ₹{isYearly ? "12,999" : "15,999"}
                   </span>
                   <span className="text-xs text-slate-500">/ month</span>
                 </div>
@@ -865,7 +845,7 @@ export default function HomePage() {
 
               <div className="pt-8">
                 <Link href="/dashboard" className="w-full fiilo-btn-secondary justify-center py-3 text-xs">
-                  Contact Sales
+                  Contact Merchant Team
                 </Link>
               </div>
             </div>
@@ -934,10 +914,10 @@ export default function HomePage() {
           <div className="fiilo-card rounded-3xl p-8 sm:p-16 text-center relative overflow-hidden bg-gradient-to-r from-purple-900/40 via-indigo-900/30 to-purple-900/40 border-purple-500/30 shadow-2xl shadow-purple-950/60">
             <div className="max-w-2xl mx-auto space-y-6">
               <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-                Ready to scale your sales with AI?
+                Ready to scale your commerce with RAFON AI?
               </h2>
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-                Join 25,000+ founders using Fiilo to automate shopping conversations, expand order value, and recover dropped revenue.
+                Join forward-thinking commerce leaders using RAFON AI to automate shopping conversations, expand order value, and recover dropped revenue.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
                 <Link href="/assistant" className="fiilo-btn-primary py-3.5 px-8 text-sm">
@@ -958,10 +938,13 @@ export default function HomePage() {
               {/* Col 1: Brand */}
               <div className="col-span-2 space-y-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 text-white font-black text-xs">
-                    F
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-purple-600 to-blue-500 text-white font-black text-xs">
+                    RF
                   </div>
-                  <span className="text-lg font-black text-white">Fiilo</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-lg font-black text-white">RAFON</span>
+                    <span className="text-xs font-bold text-purple-400">AI</span>
+                  </div>
                 </div>
                 <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
                   Autonomous Commerce Intelligence Platform built for the Razorpay AI Buildathon (Track 01 — AI Growth & Agentic Commerce).
@@ -979,10 +962,10 @@ export default function HomePage() {
               {/* Col 3 */}
               <div className="space-y-3 text-xs">
                 <div className="font-bold text-white uppercase tracking-wider">Integrations</div>
-                <div><span className="text-slate-400">Slack</span></div>
                 <div><span className="text-slate-400">Razorpay</span></div>
+                <div><span className="text-slate-400">Shopify</span></div>
                 <div><span className="text-slate-400">Stripe</span></div>
-                <div><span className="text-slate-400">HubSpot</span></div>
+                <div><span className="text-slate-400">Google Gemini</span></div>
               </div>
 
               {/* Col 4 */}
@@ -992,12 +975,12 @@ export default function HomePage() {
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span>All Systems Live</span>
                 </div>
-                <div className="text-slate-500">Track 01 Winner Edition</div>
+                <div className="text-slate-500">Track 01 Buildathon Edition</div>
               </div>
             </div>
 
             <div className="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs text-slate-500 font-mono">
-              <div>© 2026 Fiilo · Autonomous Commerce Intelligence Platform</div>
+              <div>© 2026 RAFON AI · Autonomous Commerce Intelligence Platform</div>
               <div>Razorpay AI Buildathon Track 01</div>
             </div>
           </div>
