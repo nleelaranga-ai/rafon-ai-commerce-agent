@@ -328,21 +328,21 @@ export default function CommandCenter() {
       {/* 3-Pane Unified Grid */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-12 flex-1">
         {/* Pane 1: Adaptive Conversational Console (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col rounded-2xl border border-white/10 bg-[#090b12]/95 backdrop-blur-2xl p-5 shadow-2xl min-h-[620px]">
+        <div className="lg:col-span-5 flex flex-col rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm min-h-[620px]">
           {/* Console Header */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-400 text-slate-950 font-black">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-black shadow-sm">
                 <Bot size={18} />
               </div>
               <div>
-                <div className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5 font-mono">
-                  <span className="text-amber-400 font-bold">+</span>
-                  <span>SHOPPING CONSOLE</span>
+                <div className="text-xs font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                  <span className="text-blue-600 font-bold">•</span>
+                  <span>Shopping Console</span>
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono flex items-center gap-1.5 mt-0.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  AUTONOMOUS AGENT ACTIVE
+                <div className="text-[10px] text-slate-500 font-medium flex items-center gap-1.5 mt-0.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Autonomous Agent Active
                 </div>
               </div>
             </div>
@@ -350,7 +350,7 @@ export default function CommandCenter() {
             <button
               type="button"
               onClick={resetAll}
-              className="rounded-lg border border-white/10 bg-white/5 p-2 text-slate-400 hover:text-white transition active:scale-95"
+              className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-slate-500 hover:text-slate-900 transition active:scale-95"
               title="Reset conversation session"
             >
               <RotateCcw size={14} />
@@ -367,55 +367,55 @@ export default function CommandCenter() {
                 }`}
               >
                 <div
-                  className={`rounded-xl px-4 py-3 text-xs leading-relaxed max-w-[92%] ${
+                  className={`rounded-2xl px-4 py-3 text-xs leading-relaxed max-w-[92%] ${
                     m.role === "user"
-                      ? "bg-amber-400 text-slate-950 font-semibold shadow-md shadow-amber-400/20"
-                      : "border border-white/10 bg-white/[0.03] text-slate-200 font-mono"
+                      ? "bg-blue-600 text-white font-medium shadow-sm"
+                      : "border border-slate-200 bg-slate-50 text-slate-800"
                   }`}
                 >
                   <p className="whitespace-pre-line font-sans">{m.content}</p>
 
                   {/* Render Product Pick Card if present */}
                   {m.recommendedProduct && (
-                    <div className="mt-3 overflow-hidden rounded-lg border border-amber-400/30 bg-gradient-to-b from-amber-400/10 to-transparent p-3.5">
-                      <div className="flex items-center justify-between text-[10px] uppercase font-bold text-amber-400 border-b border-white/10 pb-2 font-mono">
+                    <div className="mt-3 overflow-hidden rounded-xl border border-blue-200 bg-blue-50/60 p-3.5">
+                      <div className="flex items-center justify-between text-[10px] uppercase font-bold text-blue-700 border-b border-blue-100 pb-2">
                         <span className="flex items-center gap-1">
                           <Sparkles size={13} />
                           Top Autonomous Match
                         </span>
-                        <span className="text-emerald-300 font-mono font-black">
+                        <span className="text-emerald-700 font-bold">
                           {m.recommendedProduct.match_score}% MATCH
                         </span>
                       </div>
 
                       <div className="mt-3 flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/10 text-2xl">
+                          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-2xl shadow-sm border border-blue-100">
                             🎧
                           </div>
                           <div>
-                            <div className="text-sm font-black text-white font-sans">
+                            <div className="text-sm font-bold text-slate-900 font-sans">
                               {m.recommendedProduct.name}
                             </div>
-                            <div className="text-[10px] text-slate-400 font-mono">
+                            <div className="text-[10px] text-slate-500 font-medium">
                               45ms Latency · 45dB ANC
                             </div>
                           </div>
                         </div>
 
                         <div className="text-right">
-                          <div className="text-sm font-black font-mono text-amber-400">
+                          <div className="text-sm font-extrabold text-blue-600">
                             ₹{m.recommendedProduct.price.toLocaleString()}
                           </div>
-                          <div className="text-[10px] text-slate-500 line-through font-mono">
+                          <div className="text-[10px] text-slate-400 line-through">
                             ₹{m.recommendedProduct.original_price.toLocaleString()}
                           </div>
                         </div>
                       </div>
 
-                      <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2.5">
-                        <span className="text-[10px] text-emerald-300 flex items-center gap-1 font-mono">
-                          <CheckCircle2 size={12} /> Bounded $\le$ ₹6,000
+                      <div className="mt-3 flex items-center justify-between border-t border-blue-100 pt-2.5">
+                        <span className="text-[10px] text-emerald-700 flex items-center gap-1 font-semibold">
+                          <CheckCircle2 size={12} /> Bounded ≤ ₹6,000
                         </span>
                         <button
                           type="button"
@@ -433,7 +433,7 @@ export default function CommandCenter() {
                               ]);
                             }
                           }}
-                          className="inline-flex items-center gap-1 rounded-md bg-white px-3 py-1 text-[11px] font-black text-slate-950 transition hover:bg-amber-400"
+                          className="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-blue-700 shadow-sm"
                         >
                           <ShoppingCart size={12} />
                           Add to Basket
@@ -450,15 +450,15 @@ export default function CommandCenter() {
                     />
                   )}
                 </div>
-                <span className="mt-1 text-[9px] font-mono text-slate-600 px-1">
+                <span className="mt-1 text-[9px] font-medium text-slate-400 px-1">
                   {m.timestamp}
                 </span>
               </div>
             ))}
 
             {loading && (
-              <div className="flex items-center gap-2 text-xs text-amber-400 font-mono">
-                <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+              <div className="flex items-center gap-2 text-xs text-blue-600 font-medium">
+                <span className="h-2 w-2 rounded-full bg-blue-600 animate-ping" />
                 <span>RAFON reasoning & policy checks in progress...</span>
               </div>
             )}
@@ -467,7 +467,7 @@ export default function CommandCenter() {
           </div>
 
           {/* Quick Prompts Chips */}
-          <div className="border-t border-white/10 pt-3">
+          <div className="border-t border-slate-100 pt-3">
             <div className="flex flex-wrap gap-1.5 mb-2.5">
               {[
                 "Gaming earbuds under ₹6000",
@@ -478,7 +478,7 @@ export default function CommandCenter() {
                   key={chip}
                   type="button"
                   onClick={() => handleSendMessage(chip)}
-                  className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-mono font-semibold text-slate-300 hover:border-amber-400/50 hover:text-amber-400 transition active:scale-95"
+                  className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-semibold text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 transition active:scale-95"
                 >
                   + {chip}
                 </button>
@@ -491,18 +491,18 @@ export default function CommandCenter() {
                 e.preventDefault();
                 handleSendMessage(input);
               }}
-              className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/50 p-1.5 focus-within:border-amber-400"
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1.5 focus-within:border-blue-600 focus-within:bg-white transition"
             >
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask RAFON (e.g. Earbuds for gaming under ₹6000)..."
-                className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs text-white outline-none placeholder:text-slate-600 font-sans"
+                className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs text-slate-900 outline-none placeholder:text-slate-400 font-sans"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-400 text-slate-950 font-bold transition hover:bg-amber-300 active:scale-95 disabled:opacity-50"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white font-bold transition hover:bg-blue-700 active:scale-95 disabled:opacity-50"
               >
                 <ArrowUp size={15} />
               </button>
@@ -524,17 +524,17 @@ export default function CommandCenter() {
         </div>
 
         {/* Pane 3: Reactive Smart Cart & Razorpay Checkout (3 cols) */}
-        <div className="lg:col-span-3 flex flex-col rounded-2xl border border-white/10 bg-[#090b12]/95 backdrop-blur-2xl p-5 shadow-2xl">
+        <div className="lg:col-span-3 flex flex-col rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
           {/* Cart Header */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-2">
-              <ShoppingCart size={17} className="text-amber-400" />
-              <div className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5 font-mono">
-                <span className="text-amber-400 font-bold">+</span>
-                <span>SMART BASKET</span>
+              <ShoppingCart size={17} className="text-blue-600" />
+              <div className="text-xs font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                <span className="text-blue-600 font-bold">•</span>
+                <span>Smart Basket</span>
               </div>
             </div>
-            <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-bold font-mono text-emerald-400">
+            <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
               {cart.length} ITEMS
             </span>
           </div>
@@ -544,30 +544,30 @@ export default function CommandCenter() {
             {cart.map((item) => (
               <div
                 key={item.product_id}
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs"
+                className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-3 text-xs"
               >
                 <div>
-                  <div className="font-bold text-white flex items-center gap-1.5">
+                  <div className="font-bold text-slate-900 flex items-center gap-1.5">
                     {item.name}
                     {item.is_upsell && (
-                      <span className="rounded bg-amber-400/20 px-1 py-0.2 text-[8px] font-mono font-bold text-amber-300 uppercase">
+                      <span className="rounded bg-amber-100 px-1 py-0.2 text-[8px] font-bold text-amber-800 uppercase">
                         Bundle
                       </span>
                     )}
                   </div>
-                  <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                  <div className="text-[10px] text-slate-500 font-medium mt-0.5">
                     Qty: {item.quantity} × ₹{item.unit_price.toLocaleString()}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="font-mono font-black text-slate-200">
+                  <span className="font-bold text-slate-900">
                     ₹{(item.unit_price * item.quantity).toLocaleString()}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeCartItem(item.product_id)}
-                    className="text-slate-500 hover:text-rose-400 transition"
+                    className="text-slate-400 hover:text-rose-600 transition"
                   >
                     <Trash2 size={13} />
                   </button>
@@ -578,28 +578,28 @@ export default function CommandCenter() {
 
           {/* Contextual Upsell Card */}
           {!upsellAdded && (
-            <div className="mt-3 rounded-xl border border-amber-400/30 bg-gradient-to-b from-amber-400/10 to-transparent p-3 text-xs">
-              <div className="flex items-center justify-between text-[10px] uppercase font-bold text-amber-400 font-mono">
+            <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-xs">
+              <div className="flex items-center justify-between text-[10px] uppercase font-bold text-amber-900">
                 <span className="flex items-center gap-1">
-                  <Zap size={13} className="fill-amber-400" /> Contextual Upsell
+                  <Zap size={13} className="fill-amber-600 text-amber-600" /> Contextual Upsell
                 </span>
-                <span className="rounded bg-amber-400/20 px-1.5 py-0.5 text-[8px] font-black text-amber-400 font-mono">
+                <span className="rounded bg-amber-200/80 px-1.5 py-0.5 text-[8px] font-bold text-amber-900">
                   SAVE ₹700
                 </span>
               </div>
-              <div className="mt-2 text-xs font-bold text-white">65W GaN Fast Charger</div>
-              <div className="text-[10px] text-slate-400 mt-0.5 font-mono">
+              <div className="mt-2 text-xs font-bold text-slate-900">65W GaN Fast Charger</div>
+              <div className="text-[10px] text-slate-600 mt-0.5 font-sans">
                 Dual USB-C 65W PD (Laptop & Phone ready)
               </div>
               <div className="mt-2.5 flex items-center justify-between">
                 <div>
-                  <span className="font-mono font-bold text-emerald-400">+₹499</span>
-                  <span className="text-[9px] text-slate-500 line-through ml-1.5 font-mono">₹1,199</span>
+                  <span className="font-bold text-emerald-700">+₹499</span>
+                  <span className="text-[9px] text-slate-400 line-through ml-1.5">₹1,199</span>
                 </div>
                 <button
                   type="button"
                   onClick={addUpsell}
-                  className="inline-flex items-center gap-1 rounded-md bg-amber-400 px-2.5 py-1 text-[10px] font-black text-slate-950 transition hover:bg-amber-300 active:scale-95"
+                  className="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-2.5 py-1 text-[10px] font-bold text-white transition hover:bg-amber-600 active:scale-95 shadow-sm"
                 >
                   <Plus size={12} /> Add +₹499
                 </button>
@@ -608,32 +608,32 @@ export default function CommandCenter() {
           )}
 
           {/* Pricing Breakdown */}
-          <div className="mt-4 border-t border-white/10 pt-3 text-xs space-y-1.5">
-            <div className="flex items-center justify-between text-slate-400 font-mono">
+          <div className="mt-4 border-t border-slate-100 pt-3 text-xs space-y-1.5">
+            <div className="flex items-center justify-between text-slate-500">
               <span>Subtotal</span>
-              <span>₹{subtotal.toLocaleString()}</span>
+              <span className="font-semibold text-slate-700">₹{subtotal.toLocaleString()}</span>
             </div>
             {discountAmount > 0 && (
-              <div className="flex items-center justify-between text-emerald-400 font-mono font-medium">
+              <div className="flex items-center justify-between text-emerald-600 font-semibold">
                 <span>Rescue Code ({discountCode})</span>
                 <span>- ₹{discountAmount.toLocaleString()}</span>
               </div>
             )}
-            <div className="flex items-center justify-between pt-2 border-t border-white/10 text-sm font-black">
-              <span className="text-white">Total:</span>
-              <span className="font-mono text-amber-400 text-lg font-black">₹{total.toLocaleString()}</span>
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-sm font-extrabold">
+              <span className="text-slate-900">Total:</span>
+              <span className="text-blue-600 text-lg font-extrabold">₹{total.toLocaleString()}</span>
             </div>
           </div>
 
           {/* Razorpay Launch Button */}
           <div className="mt-4">
             {checkoutSuccess ? (
-              <div className="rounded-xl border border-emerald-400/40 bg-emerald-400/10 p-3.5 text-center">
-                <div className="flex items-center justify-center gap-1.5 text-emerald-300 font-bold text-xs">
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-center">
+                <div className="flex items-center justify-center gap-1.5 text-emerald-700 font-bold text-xs">
                   <CheckCircle2 size={16} />
                   Payment Verified & Fulfilled
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono mt-1">
+                <div className="text-[10px] text-slate-500 font-medium mt-1">
                   Razorpay HMAC Signature: VALID
                 </div>
               </div>
@@ -641,10 +641,10 @@ export default function CommandCenter() {
               <button
                 type="button"
                 onClick={handleCleanCheckout}
-                className="w-full fleet-btn fleet-btn-yellow justify-center py-3.5"
+                className="w-full finanex-btn-primary finanex-btn-blue justify-center py-3.5 text-sm"
               >
                 <span>Checkout via Razorpay (₹{total.toLocaleString()})</span>
-                <ArrowRight size={15} />
+                <ArrowRight size={16} />
               </button>
             )}
           </div>

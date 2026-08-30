@@ -1,19 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --fleet-bg: #07080c;
-  --fleet-deep: #0b0d13;
-  --fleet-card: rgba(13, 16, 24, 0.90);
+  --fiilo-bg: #09090b;
+  --fiilo-surface: rgba(255, 255, 255, 0.04);
+  --fiilo-surface-hover: rgba(255, 255, 255, 0.07);
+  --fiilo-border: rgba(255, 255, 255, 0.08);
+  --fiilo-border-light: rgba(255, 255, 255, 0.16);
 
-  --fleet-yellow: #f59e0b;
-  --fleet-accent: #38bdf8;
-  --fleet-emerald: #10b981;
+  --fiilo-purple: #a855f7;
+  --fiilo-violet: #7c3aed;
+  --fiilo-blue: #2563eb;
+  --fiilo-cyan: #22d3ee;
+  --fiilo-pink: #ec4899;
+  --fiilo-green: #4ade80;
 
-  --fleet-text: #ffffff;
-  --fleet-muted: #8b92a3;
-
-  --fleet-border: rgba(255, 255, 255, 0.12);
-  --fleet-border-light: rgba(255, 255, 255, 0.22);
+  --fiilo-text: #ffffff;
+  --fiilo-text-muted: #94a3b8;
+  --fiilo-text-subtle: #64748b;
 }
 
 * {
@@ -22,32 +25,17 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--fleet-bg);
+  background-color: var(--fiilo-bg);
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(
-      circle at 10% 10%,
-      rgba(245, 158, 11, 0.05),
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at 90% 15%,
-      rgba(56, 189, 248, 0.05),
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at 50% 90%,
-      rgba(16, 185, 129, 0.04),
-      transparent 40%
-    ),
-    var(--fleet-bg);
-  color: var(--fleet-text);
+  background-color: var(--fiilo-bg);
+  color: var(--fiilo-text);
   font-family:
     Inter,
+    Manrope,
     ui-sans-serif,
     system-ui,
     -apple-system,
@@ -68,92 +56,140 @@ button {
 }
 
 ::selection {
-  background: rgba(245, 158, 11, 0.35);
+  background: rgba(168, 85, 247, 0.4);
   color: #ffffff;
 }
 
-/* Fleet Tactical UI Utilities */
-.fleet-mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+/* Fiilo Glowing Gradients */
+.fiilo-gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #d8b4fe 50%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.fleet-btn {
+.fiilo-accent-gradient {
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #2563eb 100%);
+}
+
+.fiilo-glow-purple {
+  box-shadow: 0 0 100px rgba(168, 85, 247, 0.22);
+}
+
+.fiilo-glow-cyan {
+  box-shadow: 0 0 100px rgba(34, 211, 238, 0.2);
+}
+
+/* Fiilo Cards */
+.fiilo-card {
+  background-color: var(--fiilo-surface);
+  border: 1px solid var(--fiilo-border);
+  border-radius: 28px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fiilo-card:hover {
+  background-color: var(--fiilo-surface-hover);
+  border-color: var(--fiilo-border-light);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 50px rgba(168, 85, 247, 0.12);
+}
+
+/* Fiilo Pill Buttons */
+.fiilo-btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.4rem;
-  border-radius: 0.5rem;
-  background-color: #ffffff;
-  color: #07080c;
-  font-weight: 700;
-  font-size: 0.8125rem;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
-  border: 1px solid transparent;
-}
-
-.fleet-btn:hover {
-  background-color: #f1f3f7;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px -4px rgba(255, 255, 255, 0.15);
-}
-
-.fleet-btn-alt {
-  background-color: rgba(255, 255, 255, 0.06);
+  padding: 0.85rem 1.75rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #2563eb 100%);
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.15);
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  box-shadow: 0 8px 25px -5px rgba(124, 58, 237, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.fleet-btn-alt:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.3);
+.fiilo-btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 35px -5px rgba(168, 85, 247, 0.65);
+  filter: brightness(1.1);
 }
 
-.fleet-btn-yellow {
-  background-color: #f59e0b;
-  color: #07080c;
-}
-
-.fleet-btn-yellow:hover {
-  background-color: #d97706;
-}
-
-/* Plus Marker Icon */
-.plus-tag {
+.fiilo-btn-secondary {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  font-family: ui-monospace, monospace;
-  font-size: 0.6875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--fleet-muted);
-}
-
-.plus-tag::before {
-  content: "+";
-  font-weight: 800;
-  font-size: 0.875rem;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
 }
 
-/* Glass Panels */
-.fleet-card {
-  background: var(--fleet-card);
-  border: 1px solid var(--fleet-border);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+.fiilo-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
 }
 
-.fleet-card:hover {
-  border-color: var(--fleet-border-light);
+/* Fiilo Pill Badge */
+.fiilo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 9999px;
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #d8b4fe;
 }
 
-/* Horizontal Dividers */
-.fleet-divider {
-  height: 1px;
-  width: 100%;
-  background-color: var(--fleet-border);
+/* Infinite Marquee */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.4);
+}
+
+
 
 
