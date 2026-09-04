@@ -35,6 +35,15 @@ app.include_router(payments_router)
 app.include_router(policies_router)
 app.include_router(audit_router)
 
+# Also mount under /api/v1 prefix
+app.include_router(health_router, prefix="/api/v1")
+app.include_router(products_router, prefix="/api/v1")
+app.include_router(chat_router, prefix="/api/v1")
+app.include_router(orders_router, prefix="/api/v1")
+app.include_router(payments_router, prefix="/api/v1")
+app.include_router(policies_router, prefix="/api/v1")
+app.include_router(audit_router, prefix="/api/v1")
+
 
 
 @app.get("/")

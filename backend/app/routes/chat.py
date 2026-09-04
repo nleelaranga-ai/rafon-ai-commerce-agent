@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from app.database import CONVERSATION_STORE
 from app.schemas.chat import ChatRequest, ChatResponse
 from app.services.audit_service import audit_service
-from app.services.orchestrator import unified_orchestrator
+from app.services.ai_orchestrator import ai_orchestrator
 from app.services.policy_engine import policy_engine
 from app.services.product_service import get_all_products
 
@@ -39,7 +39,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
     catalog = [p.model_dump() for p in get_all_products()]
 
     # 5. AI Orchestration (Grok -> Gemini -> Local Deterministic Engine)
-    raw_decision = await unified_orchestrator.orchestrate(
+    raw_decision = await ai_orchestrator.orchestrate(
         message=request.message,
         conversation_history=history,
         catalog=catalog,

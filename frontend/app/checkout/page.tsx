@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowLeft, CreditCard, LockKeyhole } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import Script from "next/script";
 import AppShell from "@/components/layout/AppShell";
 import CheckoutSummary from "@/components/checkout/CheckoutSummary";
 import DemoPaymentPanel from "@/components/checkout/DemoPaymentPanel";
@@ -21,6 +22,7 @@ export default function CheckoutPage() {
       title="Razorpay Checkout"
       subtitle="Secure payment experience · Test Mode"
     >
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <main className="min-h-screen bg-[#06080f] px-5 py-7 text-white lg:px-8 lg:py-9">
         <div className="mx-auto max-w-6xl">
           <button
