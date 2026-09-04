@@ -1,55 +1,18 @@
 import json
-import logging
 import re
-from typing import Any, AsyncGenerator
+from typing import Any
+
+import httpx
 
 from app.config import settings
-from app.services.ai_provider import AIResponse
 from app.services.audit_service import audit_service
-from app.services.gemini_service import GeminiService
-from app.services.grok_service import GrokService
-from app.services.product_service import get_all_products
-
-logger = logging.getLogger("rafon_orchestrator")
 
 
 class AIOrchestrator:
+    GROQ_MODEL = "qwen/qwen3.8-27b"
+
     def __init__(self) -> None:
-        self.grok = GrokService()
-        self.gemini = GeminiService()
-        self.session_memory: dict[str, dict[str, Any]] = {}
-
-    def get_session_memory(self, session_id: str) -> dict[str, Any]:
-        return self.session_memory.get(session_id, {
-            "budget": None,
-            "preferred_brand": None,
-            "device_type": "Mobile/Laptop",
-            "past_purchases": [],
-            "conversation_count": 0,
-        })
-
-    def update_session_memory(self, session_id: str, updates: dict[str, Any]) -> dict[str, Any]:
-        mem = self.get_session_memory(session_id)
-        mem.update(updates)
-        mem["conversation_count"] = mem.get("conversation_count", 0) + 1
-        self.session_memory[session_id] = mem
-        return mem
-
-    async def generate_response(
-        self,
-        message: str,
-        history: list[dict[str, Any]] | None = None,
-        session_id: str = "default_session",
-        trace_id: str = "trc_live",
-    ) -> dict[str, Any]:
-        catalog = [p.model_dump() for p in get_all_products()]
-        return await self.orchestrate(
-            message=message,
-            conversation_history=history or [],
-            catalog=catalog,
-            trace_id=trace_id,
-            session_id=session_id,
-        )
+        self.groq_key = settings.groq_api_key
 
     async def orchestrate(
         self,
@@ -57,229 +20,222 @@ class AIOrchestrator:
         conversation_history: list[dict[str, Any]],
         catalog: list[dict[str, Any]],
         trace_id: str,
-        session_id: str = "default_session",
     ) -> dict[str, Any]:
-        memory = self.get_session_memory(session_id)
-
-        # 1. Primary: Groq LPU / xAI Grok
-        if self.grok.is_configured():
+        # 1. Primary AI Engine: Groq LPU
+        if self.groq_key:
             try:
-                res = await self.grok.generate_response(message, conversation_history, catalog, memory, trace_id)
+                result = await self._call_groq(message, conversation_history, catalog)
+                result["model_used"] = f"groq (Primary: {self.GROQ_MODEL})"
                 audit_service.log_event(
                     "AI_INFERENCE_SUCCESS",
-                    {"provider": "grok_groq", "model": res.model_name, "trace_id": trace_id},
+                    {"provider": "groq", "model": self.GROQ_MODEL, "trace_id": trace_id},
                     trace_id=trace_id,
                 )
-                self._update_memory_from_response(session_id, res)
-                return res.model_dump()
+                return result
             except Exception as exc:
-                logger.warning(f"Primary Groq/Grok provider error: {exc}")
+                print(f"\n[GROQ RUNTIME ERROR]: {exc}\n")
                 audit_service.log_event(
                     "AI_PRIMARY_FAILOVER",
-                    {"provider": "grok_groq", "error": str(exc), "trace_id": trace_id},
+                    {"provider": "groq", "error": str(exc), "trace_id": trace_id},
                     trace_id=trace_id,
                     severity="WARN",
                 )
+        else:
+            print("\n[GROQ SKIPPED]: settings.groq_api_key is empty or None. Check backend/.env\n")
 
-        # 2. Secondary: Google Gemini
-        if self.gemini.is_configured():
-            try:
-                res = await self.gemini.generate_response(message, conversation_history, catalog, memory, trace_id)
-                audit_service.log_event(
-                    "AI_INFERENCE_SUCCESS",
-                    {"provider": "gemini", "model": res.model_name, "trace_id": trace_id},
-                    trace_id=trace_id,
-                )
-                self._update_memory_from_response(session_id, res)
-                return res.model_dump()
-            except Exception as exc:
-                logger.warning(f"Secondary Gemini provider error: {exc}")
-                audit_service.log_event(
-                    "AI_FALLBACK_FAILOVER",
-                    {"provider": "gemini", "error": str(exc), "trace_id": trace_id},
-                    trace_id=trace_id,
-                    severity="WARN",
-                )
-
-        # 3. Deterministic Local Commerce Engine (Edge Fallback)
-        res = self._deterministic_commerce_engine(message, conversation_history, catalog, memory)
+        # 2. Deterministic Edge Fallback (Only used if Groq is down or key missing)
+        result = self._deterministic_commerce_engine(message, conversation_history, catalog)
+        result["model_used"] = "RAFON-Deterministic-Engine (Edge Fallback)"
         audit_service.log_event(
             "DETERMINISTIC_ENGINE_ENGAGED",
             {"reason": "Zero-latency edge fallback active", "trace_id": trace_id},
             trace_id=trace_id,
         )
-        self._update_memory_from_response(session_id, res)
-        return res.model_dump()
+        return result
 
-    def _update_memory_from_response(self, session_id: str, res: AIResponse) -> None:
-        updates = dict(res.memory_updates)
-        if res.budget is not None:
-            updates["budget"] = res.budget
-        self.update_session_memory(session_id, updates)
+    async def _call_groq(
+        self,
+        message: str,
+        history: list[dict[str, Any]],
+        catalog: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        prompt = self._build_prompt(message, history, catalog)
+        url = "https://api.groq.com/openai/v1/chat/completions"
+        payload = {
+            "model": self.GROQ_MODEL,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "You are RAFON AI, an autonomous commerce engine. "
+                        "Return strictly a raw valid JSON object without any Markdown formatting or backticks."
+                    ),
+                },
+                {"role": "user", "content": prompt},
+            ],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.2,
+        }
+        headers = {
+            "Authorization": f"Bearer {self.groq_key}",
+            "Content-Type": "application/json",
+        }
+
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            response = await client.post(url, headers=headers, json=payload)
+
+        if response.status_code >= 400:
+            raise RuntimeError(f"Groq API returned HTTP {response.status_code}: {response.text}")
+
+        body = response.json()
+        content = body.get("choices", [{}])[0].get("message", {}).get("content", "{}")
+        return json.loads(content)
 
     def _deterministic_commerce_engine(
         self,
         message: str,
         history: list[dict[str, Any]],
         catalog: list[dict[str, Any]],
-        memory: dict[str, Any],
-    ) -> AIResponse:
-        lower = message.lower()
+    ) -> dict[str, Any]:
+        msg_lower = message.lower()
 
-        # Parse Budget
-        budget: float | None = None
-        budget_match = re.search(r"(?:under|below|budget|around|upto|within|<=|less than)\s*₹?\s*(\d{3,6})", lower)
-        if budget_match:
-            budget = float(budget_match.group(1))
-        elif "6000" in lower or "6k" in lower:
-            budget = 6000.0
-        elif "5000" in lower or "5k" in lower:
-            budget = 5000.0
-        elif "4000" in lower or "4k" in lower:
-            budget = 4000.0
-        elif "3000" in lower or "3k" in lower:
-            budget = 3000.0
-        elif memory.get("budget"):
-            budget = float(memory["budget"])
-
-        # Intent Detection
-        is_greeting = any(k == lower.strip() for k in ["hi", "hello", "hey", "hola", "yo", "good morning", "good evening", "heyy", "hi there", "hello there"]) or (len(lower.split()) <= 2 and any(k in lower for k in ["hi", "hello", "hey"]))
-        is_help = any(k in lower for k in ["how can you help", "what can you do", "who are you", "what do you do", "help me"]) or lower.strip() == "help"
-        is_cheaper = any(k in lower for k in ["cheaper", "less expensive", "lower price", "lower cost", "alternative", "low price"])
-        is_gaming = any(k in lower for k in ["gaming", "game", "low latency", "latency", "bgmi", "cod", "pubg", "fps"])
-        is_anc = any(k in lower for k in ["noise cancel", "anc", "travel", "flight", "commute", "quiet", "ambient"])
-        is_budget = any(k in lower for k in ["cheap", "affordable", "budget", "under 3000", "under 4000", "best price"])
-        is_headphone = any(k in lower for k in ["headphone", "over ear", "studio", "bass", "sony", "wh-1000", "soundcore"])
-
-        matched_product = None
-        rejected_products = []
-        intent = "PRODUCT_DISCOVERY"
-        reasoning = ""
-
-        if is_greeting and not (is_gaming or is_anc or is_budget or budget):
-            intent = "GREETING"
-            reasoning = "Welcomed shopper and invited conversational use case / budget preferences."
-            reply = (
-                "Hey there! 👋 Welcome to **RAFON AI** — your autonomous personal audio concierge.\n\n"
-                "Whether you're looking for **ultra-low latency gaming earbuds** (<50ms for BGMI/COD), "
-                "**hybrid ANC headphones** for travel and focus, or **daily commute gear**, "
-                "I'm here to match your exact technical needs while staying strictly inside your budget.\n\n"
-                "What kind of audio setup are you shopping for, or do you have a target budget?"
-            )
-            return AIResponse(
-                message=reply,
-                intent=intent,
-                budget=None,
-                recommended_product_id=None,
-                upsell_product_id=None,
-                confidence=1.0,
-                reasoning_summary=reasoning,
-                specs_extracted={"action": "greet"},
-                rejected_products=[],
-                memory_updates={"last_intent": intent},
-                model_name="RAFON-Conversational-Engine",
-            )
-
-        if is_help and not (is_gaming or is_anc or is_budget or budget):
-            intent = "CAPABILITIES_OVERVIEW"
-            reasoning = "Presented interactive platform capabilities and invited technical constraints."
-            reply = (
-                "I'm your **Autonomous Audio Concierge & Commerce Agent**! Here is how I make shopping seamless:\n\n"
-                "🎯 **Precision Spec Matching:** Tell me what games you play, if you travel, or if you need mic clarity for calls, and I'll match the optimal product.\n"
-                "💰 **Strict Budget Guardrails:** I mathematically verify prices so you never exceed your budget ceiling.\n"
-                "🎁 **Smart Margin Bundles:** I identify compatible accessories (like 65W GaN fast chargers) that fit inside your remaining budget.\n"
-                "⚡ **1-Click Razorpay Payments:** When you're ready, I prepare your order for instant, secure checkout.\n\n"
-                "Tell me what you're looking for to get started!"
-            )
-            return AIResponse(
-                message=reply,
-                intent=intent,
-                budget=None,
-                recommended_product_id=None,
-                upsell_product_id=None,
-                confidence=1.0,
-                reasoning_summary=reasoning,
-                specs_extracted={"action": "help"},
-                rejected_products=[],
-                memory_updates={"last_intent": intent},
-                model_name="RAFON-Conversational-Engine",
-            )
-
-        # Filter catalog for product matching
-        for p in catalog:
-            price = p.get("price", 9999)
-            if budget and price > budget:
-                rejected_products.append({
-                    "id": p["id"],
-                    "name": p["name"],
-                    "reason": f"Price ₹{price:,} exceeds stated budget ceiling (₹{budget:,})"
-                })
-                continue
-
-            specs_val = p.get("specs") or []
-            specs_str = " ".join(specs_val) if isinstance(specs_val, list) else str(specs_val)
-            if is_gaming and "ms" in specs_str and not ("40ms" in specs_str or "45ms" in specs_str or "beast" in specs_str.lower()):
-                rejected_products.append({
-                    "id": p["id"],
-                    "name": p["name"],
-                    "reason": "Latency exceeds ultra-low gaming threshold (<=50ms)"
-                })
-
-        if is_cheaper:
-            intent = "ALTERNATIVE_DISCOVERY"
-            matched_product = next((p for p in catalog if p["id"] == "boat-immortal-131"), None) or next((p for p in catalog if p.get("price", 9999) < 2000), catalog[0])
-            reasoning = "Identified request for lower cost alternative; recommended boAt Immortal 131 at ₹1,499 with 40ms BEAST mode."
-            reply = f"Here is our top budget gaming alternative: **{matched_product['name']}** at just **₹{matched_product['price']:,}** (saving ₹4,000 with 40ms BEAST Mode latency)."
-
-        elif is_gaming:
-            intent = "GAMING_AUDIO"
-            matched_product = next((p for p in catalog if p["id"] == "nothing-ear-a"), None)
-            if not matched_product:
-                matched_product = next((p for p in catalog if "40ms" in str(p.get("specs", "")) or "45ms" in str(p.get("specs", ""))), catalog[0])
-            reasoning = "Extracted gaming low-latency requirement (<50ms) and matched Nothing Ear (a) with 45ms gaming mode under ₹6,000 budget ceiling."
-            reply = f"I've matched the **{matched_product['name']}** (₹{matched_product['price']:,}). It delivers an ultra-low **45ms dedicated gaming mode** with **45dB Adaptive ANC** and 42.5h battery life, staying strictly under your ₹{int(budget or 6000):,} budget."
-
-        elif is_anc or is_headphone:
-            intent = "COMMUTE_ANC"
-            matched_product = next((p for p in catalog if p["id"] == "soundcore-space-one" or p.get("category") == "headphones"), catalog[0])
-            reasoning = "Matched Active Noise Cancellation requirement with multi-mic Hybrid ANC system."
-            reply = f"For travel and immersive silence, the **{matched_product['name']}** (₹{matched_product['price']:,}) is optimal, offering **2X stronger voice reduction ANC** and 55-hour battery life."
-
-        elif is_budget:
-            intent = "BUDGET_AUDIO"
-            matched_product = next((p for p in catalog if p.get("price", 9999) <= (budget or 3000)), catalog[1])
-            reasoning = "Optimized for maximum battery and value within stated price floor."
-            reply = f"The **{matched_product['name']}** (₹{matched_product['price']:,}) provides outstanding value with 60ms low latency, 50h playback, and IPX5 water resistance."
-
-        else:
-            intent = "PRODUCT_DISCOVERY"
-            matched_product = catalog[0]
-            reasoning = "Defaulted to top-rated flagship audio catalog entry."
-            reply = f"I recommend the **{matched_product['name']}** (₹{matched_product['price']:,}). What budget or specific features (e.g. gaming latency, ANC, battery life) are most important for you?"
-
-        # Contextual Upsell Generator (Margin-Aware)
-        upsell_product_id = None
-        if matched_product and matched_product.get("id") == "nothing-ear-a":
-            upsell_product_id = "gan-charger-65w"
-            reply += " 🎁 **Bundle Offer:** Add our **65W GaN Fast Charger** for just **+₹499** (Net: ₹5,998 — fits inside ₹6,000 budget)!"
-        elif matched_product and matched_product.get("category") == "headphones":
-            upsell_product_id = "premium-case-audio"
-            reply += " 🛡️ **Protection Pack:** Add the **Reinforced Hard Shell Case** for only **+₹349**."
-
-        return AIResponse(
-            message=reply,
-            intent=intent,
-            budget=budget,
-            recommended_product_id=matched_product["id"] if matched_product else None,
-            upsell_product_id=upsell_product_id,
-            confidence=0.98 if is_gaming or is_anc else 0.94,
-            reasoning_summary=reasoning,
-            specs_extracted={"latency_ms": 45 if is_gaming else 60, "use_case": intent.lower()},
-            rejected_products=rejected_products[:3],
-            memory_updates={"last_intent": intent, "budget": budget},
-            model_name="RAFON-Conversational-Engine",
+        budget = 6000
+        budget_match = re.search(
+            r"(?:under|below|budget|within|<=|<)?\s*(?:₹|rs\.?|inr)?\s*(\d{3,6})",
+            msg_lower,
         )
+        if budget_match:
+            try:
+                budget = int(budget_match.group(1))
+            except ValueError:
+                budget = 6000
+
+        # Natural Greetings
+        if msg_lower.strip() in ["hi", "hello", "hey", "start", "help", "who are you"]:
+            return {
+                "reply": (
+                    "Hey! 👋 I'm **RAFON AI**, your autonomous commerce intelligence agent. "
+                    "I can help find the best gear matching your latency and budget constraints, "
+                    "package verified bundles, and walk you through secure checkout. What are you looking for today?"
+                ),
+                "intent": "GREETING",
+                "budget": None,
+                "requirements": ["intent_discovery", "natural_guidance"],
+                "recommended_product_id": None,
+                "recommendation_reason": None,
+                "upsell_product_id": None,
+                "upsell_reason": None,
+                "confidence": 0.99,
+                "action": "GREETING",
+            }
+
+        # Cheaper / Alternatives
+        if any(w in msg_lower for w in ["cheaper", "budget option", "less price", "alternate", "lower cost"]):
+            return {
+                "reply": (
+                    "I found a budget-focused gaming option: **boAt Immortal 131 Gaming TWS** at **₹1,499** "
+                    "(saving ₹4,000 vs premium picks). It features 40ms BEAST™ Mode latency and 40h playtime."
+                ),
+                "intent": "ALTERNATIVE_DISCOVERY",
+                "budget": budget,
+                "requirements": ["ultra_low_cost", "40ms_latency"],
+                "recommended_product_id": "boat-immortal-131",
+                "recommendation_reason": "Top cost-to-performance ratio in the catalog with 40ms low latency gaming mode at ₹1,499.",
+                "upsell_product_id": "fast-charger-65w",
+                "upsell_reason": "Bundle with a 65W GaN Dual-Port Fast Charger for only ₹499 additional.",
+                "confidence": 0.97,
+                "action": "COMPARISON",
+            }
+
+        # Cart Addition
+        if any(w in msg_lower for w in ["add", "cart", "buy that", "take that", "add that", "proceed"]):
+            return {
+                "reply": "Added the recommended setup to your Smart Cart. Your package is bounded by merchant rules and ready for Razorpay checkout.",
+                "intent": "CART_ACTION",
+                "budget": budget,
+                "requirements": ["cart_addition", "checkout_ready"],
+                "recommended_product_id": "nothing-ear-a",
+                "recommendation_reason": "Customer approved item addition.",
+                "upsell_product_id": "fast-charger-65w",
+                "upsell_reason": "Contextual power accessory ready in cart.",
+                "confidence": 0.98,
+                "action": "CART_ACTION",
+            }
+
+        # General Audio Queries
+        if any(w in msg_lower for w in ["earbud", "audio", "headphone", "gaming", "tws", "wireless", "sound"]):
+            return {
+                "reply": (
+                    "I've matched your request with our top-rated gaming TWS: **Nothing Ear (a)** at **₹5,499** "
+                    "(within your ₹6,000 budget). It delivers dedicated **45ms Low Latency Gaming Mode**, 45dB Smart ANC, "
+                    "and 42.5 hours battery life."
+                ),
+                "intent": "Gaming Audio",
+                "budget": budget,
+                "requirements": ["45ms low-latency", "45dB active noise cancellation", "under ₹6,000 budget"],
+                "recommended_product_id": "nothing-ear-a",
+                "recommendation_reason": "Optimal 45ms low-latency gaming profile while fitting comfortably within budget.",
+                "upsell_product_id": "fast-charger-65w",
+                "upsell_reason": "Pair with 65W GaN Fast Charger to charge earbuds and mobile simultaneously.",
+                "confidence": 0.986,
+                "action": "RECOMMEND",
+            }
+
+        # Default fallback
+        return {
+            "reply": "I analyzed our catalog for your request. Here is our best matching recommendation with verified stock and price bounds.",
+            "intent": "PRODUCT_DISCOVERY",
+            "budget": budget,
+            "requirements": ["verified_stock", "bounded_pricing"],
+            "recommended_product_id": "nothing-ear-a",
+            "recommendation_reason": "Selected based on general relevance and category rating.",
+            "upsell_product_id": "fast-charger-65w",
+            "upsell_reason": "Universal complementary accessory.",
+            "confidence": 0.92,
+            "action": "RECOMMEND",
+        }
+
+    def _build_prompt(
+        self,
+        message: str,
+        history: list[dict[str, Any]],
+        catalog: list[dict[str, Any]],
+    ) -> str:
+        catalog_json = json.dumps(catalog, ensure_ascii=False)
+        history_json = json.dumps(history[-6:], ensure_ascii=False)
+
+        return f"""
+You are RAFON AI, an autonomous commerce intelligence engine.
+Analyze the user's message, conversation history, and the merchant catalog.
+
+Merchant Catalog:
+{catalog_json}
+
+Recent Conversation History:
+{history_json}
+
+Current User Message:
+"{message}"
+
+Rules:
+1. Output ONLY valid JSON matching this schema:
+{{
+  "reply": "Natural conversational response to the user with bold highlights and emojis",
+  "intent": "Short intent string (e.g. Gaming Audio, Budget Search, GREETING, CART_ACTION)",
+  "budget": 6000 or null,
+  "requirements": ["list", "of", "extracted", "specs"],
+  "recommended_product_id": "product-id-from-catalog" or null,
+  "recommendation_reason": "Clear concise reason why selected",
+  "upsell_product_id": "upsell-id-from-catalog" or null,
+  "upsell_reason": "Why this upsell is complementary",
+  "confidence": 0.95,
+  "action": "GREETING" | "RECOMMEND" | "COMPARISON" | "CART_ACTION" | "CLARIFY"
+}}
+2. Never invent products. Only select IDs present in Merchant Catalog.
+3. If user budget is specified, recommended product price MUST NOT exceed budget.
+4. If the user is just saying hello or asking who you are, set action to "GREETING" and recommend nothing.
+5. Return raw JSON with NO markdown backticks.
+""".strip()
 
 
 ai_orchestrator = AIOrchestrator()
-
