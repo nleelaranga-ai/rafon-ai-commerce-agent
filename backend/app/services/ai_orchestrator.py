@@ -202,11 +202,11 @@ class AIOrchestrator:
         catalog: list[dict[str, Any]],
     ) -> str:
         catalog_json = json.dumps(catalog, ensure_ascii=False)
-        history_json = json.dumps(history[-6:], ensure_ascii=False)
+        history_json = json.dumps(history[-8:], ensure_ascii=False)
 
         return f"""
-You are RAFON AI, an autonomous commerce intelligence engine.
-Analyze the user's message, conversation history, and the merchant catalog.
+You are RAFON AI, an autonomous, intelligent commerce engine and shopping assistant.
+Maintain an authentic, concise, helpful tone with natural dialogue.
 
 Merchant Catalog:
 {catalog_json}
@@ -217,25 +217,29 @@ Recent Conversation History:
 Current User Message:
 "{message}"
 
-Rules:
-1. Output ONLY valid JSON matching this schema:
+CRITICAL BEHAVIOR GUIDELINES:
+1. Multi-Turn Awareness: Read the conversation history. If the user is asking a follow-up or meta-question (e.g. "are you ai", "who built you", "what can you do"), answer directly and conversationally as RAFON AI. NEVER repeat a generic introductory greeting if you have already greeted the user.
+2. Direct Product Discovery: Only suggest specific products from the Merchant Catalog when the user expresses an intent, constraint, or interest in shopping/gear.
+3. If no product recommendation is needed (e.g. greetings, casual chat, clarification, general questions):
+   - Set "action": "CHAT" (or "GREETING" only for the very first hello)
+   - Set "recommended_product_id": null
+   - Set "upsell_product_id": null
+   - Set "budget": null
+   - Do NOT invent fake specifications.
+
+Output strictly a JSON object with this schema:
 {{
-  "reply": "Natural conversational response to the user with bold highlights and emojis",
-  "intent": "Short intent string (e.g. Gaming Audio, Budget Search, GREETING, CART_ACTION)",
+  "reply": "Your natural, direct conversational response to the user with bold highlights and emojis",
+  "intent": "Short intent (e.g., IDENTITY_QUERY, GREETING, GAMING_AUDIO, BUDGET_DISCOVERY)",
   "budget": 6000 or null,
   "requirements": ["list", "of", "extracted", "specs"],
-  "recommended_product_id": "product-id-from-catalog" or null,
-  "recommendation_reason": "Clear concise reason why selected",
-  "upsell_product_id": "upsell-id-from-catalog" or null,
-  "upsell_reason": "Why this upsell is complementary",
+  "recommended_product_id": "catalog-product-id" or null,
+  "recommendation_reason": "Why chosen or null",
+  "upsell_product_id": "upsell-id" or null,
+  "upsell_reason": "Why complementary or null",
   "confidence": 0.95,
-  "action": "GREETING" | "RECOMMEND" | "COMPARISON" | "CART_ACTION" | "CLARIFY"
+  "action": "GREETING" | "CHAT" | "RECOMMEND" | "COMPARISON" | "CART_ACTION"
 }}
-2. Never invent products. Only select IDs present in Merchant Catalog.
-3. If user budget is specified, recommended product price MUST NOT exceed budget.
-4. If the user is just saying hello or asking who you are, set action to "GREETING" and recommend nothing.
-5. Return raw JSON with NO markdown backticks.
 """.strip()
-
 
 ai_orchestrator = AIOrchestrator()
