@@ -145,14 +145,16 @@ export async function sendChatMessage(
   }
 
   // Graceful client-side fallback
-  const isCheaper = message.toLowerCase().includes("cheaper") || message.toLowerCase().includes("less");
-  const isGreeting = ["hi", "hello", "hey"].includes(message.trim().toLowerCase());
-  const isCart = message.toLowerCase().includes("add") || message.toLowerCase().includes("buy");
+  const lower = message.toLowerCase().trim();
+  const isGreeting = ["hi", "hello", "hey", "hola", "yo", "good morning", "heyy", "hi there"].includes(lower) || (lower.length <= 4 && lower.includes("hi"));
+  const isHelp = lower.includes("how can you help") || lower.includes("what can you do") || lower.includes("who are you") || lower === "help";
+  const isCheaper = lower.includes("cheaper") || lower.includes("less expensive") || lower.includes("lower price");
+  const isCart = lower.includes("add") || lower.includes("buy") || lower.includes("cart");
 
   if (isGreeting) {
     return {
       conversation_id: conversationId || "conv_demo_local",
-      reply: "Hey! 👋 I'm **RAFON AI**, your autonomous commerce intelligence assistant. What can I find for you today?",
+      reply: "Hey there! 👋 Welcome to **RAFON AI** — your personal autonomous audio concierge.\n\nWhether you're looking for **ultra-low latency gaming earbuds** (<50ms for BGMI/COD), **hybrid ANC headphones** for travel & deep focus, or daily commute gear under a strict budget, I'm here to match your exact specs and unlock exclusive checkout bundles.\n\nWhat kind of audio setup are you shopping for, or do you have a target budget?",
       intent: "GREETING",
       budget: null,
       requirements: ["intent_discovery"],
@@ -160,21 +162,53 @@ export async function sendChatMessage(
       recommendation_reason: null,
       upsell_product_id: null,
       upsell_reason: null,
-      confidence: 0.99,
+      confidence: 1.0,
       telemetry: [
-        { id: "1", name: "QUERY_INGEST", status: "completed", details: "Greeting intent classified", latency_ms: 12, confidence: 1.0 },
+        { id: "1", name: "QUERY_INGEST", status: "completed", details: "Greeting intent classified", latency_ms: 10, confidence: 1.0 },
+        { id: "2", name: "INTENT_PARSED", status: "completed", details: "Conversational welcome mode active", latency_ms: 15, confidence: 1.0 },
       ],
       comparison: null,
       action: "GREETING",
       budget_utilized_percentage: 0,
-      model_used: "RAFON-Local-Engine",
+      model_used: "RAFON-Conversational-Engine",
+      reasoning_summary: "Welcomed shopper and invited conversational use case / budget preferences.",
+      rejected_products: [],
+      memory_updates: { last_intent: "GREETING" },
+      specs_extracted: { action: "greet" },
+    };
+  }
+
+  if (isHelp) {
+    return {
+      conversation_id: conversationId || "conv_demo_local",
+      reply: "I'm your **Autonomous Audio Concierge & Commerce Agent**! Here is how I make shopping seamless:\n\n🎯 **Precision Spec Matching:** Tell me what games you play, if you travel, or if you need mic clarity for calls, and I'll match the optimal product.\n💰 **Strict Budget Guardrails:** I mathematically verify prices so you never overspend your budget ceiling.\n🎁 **Smart Margin Bundles:** I identify compatible accessories (like 65W GaN fast chargers) that fit inside your remaining budget.\n⚡ **1-Click Razorpay Payments:** When you're ready, I prepare your order for instant, secure checkout.\n\nTell me what you're looking for to get started!",
+      intent: "CAPABILITIES_OVERVIEW",
+      budget: null,
+      requirements: ["capabilities_inquiry"],
+      recommended_product_id: null,
+      recommendation_reason: null,
+      upsell_product_id: null,
+      upsell_reason: null,
+      confidence: 1.0,
+      telemetry: [
+        { id: "1", name: "QUERY_INGEST", status: "completed", details: "Help inquiry received", latency_ms: 12, confidence: 1.0 },
+        { id: "2", name: "INTENT_PARSED", status: "completed", details: "Delivered interactive capability walkthrough", latency_ms: 20, confidence: 1.0 },
+      ],
+      comparison: null,
+      action: "CAPABILITIES_OVERVIEW",
+      budget_utilized_percentage: 0,
+      model_used: "RAFON-Conversational-Engine",
+      reasoning_summary: "Presented interactive platform capabilities and invited technical constraints.",
+      rejected_products: [],
+      memory_updates: { last_intent: "HELP" },
+      specs_extracted: { action: "help" },
     };
   }
 
   if (isCheaper) {
     return {
       conversation_id: conversationId || "conv_demo_local",
-      reply: "Here is the top budget gaming alternative: **boAt Immortal 131 Gaming TWS** at **₹1,499** (40ms BEAST Mode latency, saving ₹4,000).",
+      reply: "Here is our top budget gaming alternative: **boAt Immortal 131 Gaming TWS** at **₹1,499** (40ms BEAST Mode latency, saving ₹4,000).",
       intent: "ALTERNATIVE_DISCOVERY",
       budget: 6000,
       requirements: ["low_cost", "40ms_latency"],
@@ -224,7 +258,7 @@ export async function sendChatMessage(
     comparison: null,
     action: isCart ? "CART_ACTION" : "RECOMMEND",
     budget_utilized_percentage: 91.6,
-    model_used: "gemini-2.5-flash",
+    model_used: "Groq-LPU-FastEngine",
   };
 }
 

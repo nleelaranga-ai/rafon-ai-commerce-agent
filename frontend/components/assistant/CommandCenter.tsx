@@ -59,7 +59,7 @@ export default function CommandCenter() {
       id: "m0",
       role: "assistant",
       content:
-        "Hello! I'm **RAFON AI**, your autonomous commerce intelligence agent powered by Grok-2. Tell me what audio gear you're shopping for, your budget ceiling, or specific latency & noise cancellation requirements.",
+        "Hey there! 👋 I'm **RAFON AI**, your autonomous commerce intelligence concierge. How can I help you today? You can ask for gaming audio with ultra-low latency, travel ANC headphones, compare products, or ask any questions about specs and budget!",
       timestamp: "Just now",
     },
   ]);
@@ -69,22 +69,19 @@ export default function CommandCenter() {
 
   // Telemetry & Explainability state
   const [telemetry, setTelemetry] = useState<TelemetryStep[]>([]);
-  const [currentIntent, setCurrentIntent] = useState<string>("GAMING_AUDIO");
-  const [currentBudget, setCurrentBudget] = useState<number | null>(6000);
-  const [confidence, setConfidence] = useState<number>(0.98);
-  const [budgetPct, setBudgetPct] = useState<number>(91.6);
-  const [modelUsed, setModelUsed] = useState<string>("Grok-2-Commerce");
+  const [currentIntent, setCurrentIntent] = useState<string>("DISCOVERY");
+  const [currentBudget, setCurrentBudget] = useState<number | null>(null);
+  const [confidence, setConfidence] = useState<number>(1.0);
+  const [budgetPct, setBudgetPct] = useState<number>(0);
+  const [modelUsed, setModelUsed] = useState<string>("Groq-LPU-FastEngine");
   const [activeTraceId, setActiveTraceId] = useState<string>("trc_9a81");
   const [reasoningSummary, setReasoningSummary] = useState<string>(
-    "Extracted gaming low-latency spec (<50ms) and matched Nothing Ear (a) at ₹5,499. The 65W GaN Charger (+₹499) was proposed as an upsell because the combined price ₹5,998 stays within the stated ₹6,000 budget ceiling."
+    "Awaiting user input to perform natural language intent extraction, catalog bounding, and margin-aware bundling."
   );
-  const [rejectedProducts, setRejectedProducts] = useState<Array<{ id: string; name: string; reason: string }>>([
-    { id: "boat-141", name: "boAt Airdopes 141", reason: "Latency 65ms exceeds gaming threshold (<=50ms)" },
-    { id: "sony-wh", name: "Sony WH-1000XM5", reason: "Price ₹29,990 exceeds stated ₹6,000 budget cap" },
-  ]);
+  const [rejectedProducts, setRejectedProducts] = useState<Array<{ id: string; name: string; reason: string }>>([]);
   const [sessionMemory, setSessionMemory] = useState<Record<string, any>>({
-    budget: 6000,
-    preferred_brand: "Nothing",
+    budget: null,
+    preferred_brand: null,
     device_type: "Mobile/Laptop",
   });
 
@@ -95,15 +92,7 @@ export default function CommandCenter() {
   const [activePaymentMethod, setActivePaymentMethod] = useState<"upi" | "card" | "netbanking">("upi");
 
   // Cart state
-  const [cart, setCart] = useState<OrderItem[]>([
-    {
-      product_id: "nothing-ear-a",
-      name: "Nothing Ear (a) TWS",
-      quantity: 1,
-      unit_price: 5499,
-      is_upsell: false,
-    },
-  ]);
+  const [cart, setCart] = useState<OrderItem[]>([]);
   const [upsellAdded, setUpsellAdded] = useState(false);
   const [discountCode, setDiscountCode] = useState<string | null>(null);
 
@@ -167,35 +156,47 @@ export default function CommandCenter() {
       setConfidence(res.confidence);
       setTelemetry(res.telemetry);
       setBudgetPct(res.budget_utilized_percentage);
-      setModelUsed(res.model_used || "Grok-2-Commerce");
+      setModelUsed(res.model_used || "Groq-LPU-FastEngine");
       if (res.reasoning_summary) setReasoningSummary(res.reasoning_summary);
       if (res.rejected_products && res.rejected_products.length > 0) setRejectedProducts(res.rejected_products);
       if (res.memory_updates) setSessionMemory((prev) => ({ ...prev, ...res.memory_updates }));
       setActiveTraceId(`trc_${Math.random().toString(36).substring(2, 8)}`);
 
       let productObj: Product | null = null;
-      if (res.recommended_product_id === "nothing-ear-a" || !res.recommended_product_id) {
-        productObj = {
-          id: "nothing-ear-a",
-          name: "Nothing Ear (a) TWS",
-          category: "Audio",
-          price: 5499,
-          original_price: 7999,
-          match_score: 98.6,
-          specs: ["45ms Low Latency Gaming Mode", "45dB Smart ANC", "42.5 hrs battery"],
-          icon: "headphones",
+      if (res.recommended_product_id) {
+        const catalogProducts: Record<string, Product> = {
+          "nothing-ear-a": {
+            id: "nothing-ear-a",
+            name: "Nothing Ear (a) TWS",
+            category: "Audio",
+            price: 5499,
+            original_price: 7999,
+            match_score: 98.6,
+            specs: ["45ms Low Latency Gaming Mode", "45dB Smart ANC", "42.5 hrs battery"],
+            icon: "headphones",
+          },
+          "boat-immortal-131": {
+            id: "boat-immortal-131",
+            name: "boAt Immortal 131 Gaming",
+            category: "Audio",
+            price: 1499,
+            original_price: 3490,
+            match_score: 92.1,
+            specs: ["BEAST Mode 40ms", "RGB Gaming LEDs", "40 hrs battery"],
+            icon: "gamepad-2",
+          },
+          "realme-buds-pro": {
+            id: "realme-buds-pro",
+            name: "Realme Buds Air 5 Pro",
+            category: "Audio",
+            price: 4999,
+            original_price: 6999,
+            match_score: 94.4,
+            specs: ["40ms Low Latency", "Hi-Res LDAC Codec", "50dB Deep ANC"],
+            icon: "volume-2",
+          },
         };
-      } else if (res.recommended_product_id === "boat-immortal-131") {
-        productObj = {
-          id: "boat-immortal-131",
-          name: "boAt Immortal 131 Gaming",
-          category: "Audio",
-          price: 1499,
-          original_price: 3490,
-          match_score: 92.1,
-          specs: ["BEAST Mode 40ms", "RGB Gaming LEDs", "40 hrs battery"],
-          icon: "gamepad-2",
-        };
+        productObj = catalogProducts[res.recommended_product_id] || null;
       }
 
       const assistantMsg: MessageItem = {
@@ -211,14 +212,19 @@ export default function CommandCenter() {
 
       // If action is add to cart, ensure items are present
       if (res.action === "CART_ACTION" || msgText.toLowerCase().includes("add")) {
-        if (!cart.some((i) => i.product_id === "nothing-ear-a")) {
+        const prodToAdd = productObj || {
+          id: "nothing-ear-a",
+          name: "Nothing Ear (a) TWS",
+          price: 5499,
+        };
+        if (!cart.some((i) => i.product_id === prodToAdd.id)) {
           setCart((prev) => [
             ...prev,
             {
-              product_id: "nothing-ear-a",
-              name: "Nothing Ear (a) TWS",
+              product_id: prodToAdd.id,
+              name: prodToAdd.name,
               quantity: 1,
-              unit_price: 5499,
+              unit_price: prodToAdd.price,
               is_upsell: false,
             },
           ]);
@@ -524,10 +530,11 @@ export default function CommandCenter() {
           <div className="border-t border-white/10 pt-3">
             <div className="flex flex-wrap gap-1.5 mb-2.5">
               {[
+                { label: "👋 How can you help?", prompt: "Hi! How can you help me find the best audio gear?" },
                 { label: "🎮 Gaming <50ms", prompt: "I need wireless gaming earbuds under ₹6000 with under 50ms latency" },
                 { label: "✈️ Travel ANC >40dB", prompt: "Recommend noise-cancelling headphones for flight travel under ₹9000" },
                 { label: "💰 Under ₹4000", prompt: "Best affordable earbuds with great battery under ₹4000" },
-                { label: "🎁 Bundle Upsell", prompt: "Add high-margin fast charger upsell within budget" },
+                { label: "🎁 Smart Bundle", prompt: "What complementary accessories should I pair with my audio gear?" },
               ].map((chip) => (
                 <button
                   key={chip.label}

@@ -121,6 +121,8 @@ class UnifiedAIOrchestrator:
             budget = float(memory["budget"])
 
         # Intent Detection
+        is_greeting = any(k == lower.strip() for k in ["hi", "hello", "hey", "hola", "yo", "good morning", "good evening", "heyy", "hi there", "hello there"]) or (len(lower.split()) <= 2 and any(k in lower for k in ["hi", "hello", "hey"]))
+        is_help = any(k in lower for k in ["how can you help", "what can you do", "who are you", "what do you do", "help me"]) or lower.strip() == "help"
         is_cheaper = any(k in lower for k in ["cheaper", "less expensive", "lower price", "lower cost", "alternative", "low price"])
         is_gaming = any(k in lower for k in ["gaming", "game", "low latency", "latency", "bgmi", "cod", "pubg", "fps"])
         is_anc = any(k in lower for k in ["noise cancel", "anc", "travel", "flight", "commute", "quiet", "ambient"])
@@ -132,7 +134,56 @@ class UnifiedAIOrchestrator:
         intent = "PRODUCT_DISCOVERY"
         reasoning = ""
 
-        # Filter catalog
+        if is_greeting and not (is_gaming or is_anc or is_budget or budget):
+            intent = "GREETING"
+            reasoning = "Welcomed shopper and invited conversational use case / budget preferences."
+            reply = (
+                "Hey there! 👋 Welcome to **RAFON AI** — your autonomous personal audio concierge.\n\n"
+                "Whether you're looking for **ultra-low latency gaming earbuds** (<50ms for BGMI/COD), "
+                "**hybrid ANC headphones** for travel and focus, or **daily commute gear**, "
+                "I'm here to match your exact technical needs while staying strictly inside your budget.\n\n"
+                "What kind of audio setup are you shopping for, or do you have a target budget?"
+            )
+            return AIResponse(
+                message=reply,
+                intent=intent,
+                budget=None,
+                recommended_product_id=None,
+                upsell_product_id=None,
+                confidence=1.0,
+                reasoning_summary=reasoning,
+                specs_extracted={"action": "greet"},
+                rejected_products=[],
+                memory_updates={"last_intent": intent},
+                model_name="RAFON-Conversational-Engine",
+            )
+
+        if is_help and not (is_gaming or is_anc or is_budget or budget):
+            intent = "CAPABILITIES_OVERVIEW"
+            reasoning = "Presented interactive platform capabilities and invited technical constraints."
+            reply = (
+                "I'm your **Autonomous Audio Concierge & Commerce Agent**! Here is how I make shopping seamless:\n\n"
+                "🎯 **Precision Spec Matching:** Tell me what games you play, if you travel, or if you need mic clarity for calls, and I'll match the optimal product.\n"
+                "💰 **Strict Budget Guardrails:** I mathematically verify prices so you never exceed your budget ceiling.\n"
+                "🎁 **Smart Margin Bundles:** I identify compatible accessories (like 65W GaN fast chargers) that fit inside your remaining budget.\n"
+                "⚡ **1-Click Razorpay Payments:** When you're ready, I prepare your order for instant, secure checkout.\n\n"
+                "Tell me what you're looking for to get started!"
+            )
+            return AIResponse(
+                message=reply,
+                intent=intent,
+                budget=None,
+                recommended_product_id=None,
+                upsell_product_id=None,
+                confidence=1.0,
+                reasoning_summary=reasoning,
+                specs_extracted={"action": "help"},
+                rejected_products=[],
+                memory_updates={"last_intent": intent},
+                model_name="RAFON-Conversational-Engine",
+            )
+
+        # Filter catalog for product matching
         for p in catalog:
             price = p.get("price", 9999)
             if budget and price > budget:
