@@ -12,6 +12,8 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite:///./rafon.db"
 
+    grok_api_key: str | None = None
+    xai_api_key: str | None = None
     gemini_api_key: str | None = None
     groq_api_key: str | None = None
 

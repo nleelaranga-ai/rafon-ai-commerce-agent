@@ -30,6 +30,10 @@ export interface ChatResponse {
   action: string;
   budget_utilized_percentage: number;
   model_used: string;
+  reasoning_summary?: string;
+  rejected_products?: Array<{ id: string; name: string; reason: string }>;
+  memory_updates?: Record<string, any>;
+  specs_extracted?: Record<string, any>;
 }
 
 export interface Product {
@@ -404,3 +408,34 @@ export async function fetchAuditData(): Promise<AuditDashboardData> {
     },
   };
 }
+
+export async function fetchMerchantPolicies(): Promise<Record<string, any>> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/policies`);
+    if (!res.ok) throw new Error("Policy fetch error");
+    const data = await res.json();
+    return data.policies || {};
+  } catch (err) {
+    return {
+      max_ai_discount_pct: 5,
+      target_upsell_margin_pct: 25,
+      min_inventory_threshold: 3,
+      hold_duration_minutes: 15,
+      rescue_discount_pct: 5,
+    };
+  }
+}
+
+export async function updateMerchantPolicies(policies: Record<string, any>): Promise<any> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/policies`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(policies),
+    });
+    return await res.json();
+  } catch (err) {
+    return { status: "simulated", policies };
+  }
+}
+

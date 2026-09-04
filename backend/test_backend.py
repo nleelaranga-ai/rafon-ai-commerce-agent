@@ -101,6 +101,25 @@ def run_tests():
     print(f"[PASS] GET /audit: OK -> {audit_data['total_events_logged']} events logged, Integrity: {audit_data['integrity_status']}")
     print(f"       AOV Lift: +{audit_data['metrics']['aov_lift_percentage']}% | Recovery Rate: {audit_data['metrics']['recovery_rate_percentage']}%")
 
+    # 10. Policies: Test Merchant Governance Playground
+    r = client.get("/policies")
+    assert r.status_code == 200, f"Policies get failed: {r.text}"
+    pol_data = r.json()
+    assert pol_data["guardrail_status"] == "ACTIVE"
+    print(f"[PASS] GET /policies: OK -> Guardrails active: {pol_data['policies']}")
+
+    r = client.post("/policies", json={
+        "max_ai_discount_pct": 7,
+        "target_upsell_margin_pct": 30,
+        "hold_duration_minutes": 20,
+        "min_inventory_threshold": 4,
+        "rescue_discount_pct": 6
+    })
+    assert r.status_code == 200, f"Policies update failed: {r.text}"
+    updated_pol = r.json()
+    assert updated_pol["policies"]["max_ai_discount_pct"] == 7
+    print(f"[PASS] POST /policies: OK -> Updated max discount to {updated_pol['policies']['max_ai_discount_pct']}%")
+
     print("\n>>> ALL BACKEND TESTS PASSED PERFECTLY! 100% OPERATIONAL. <<<")
 
 if __name__ == "__main__":

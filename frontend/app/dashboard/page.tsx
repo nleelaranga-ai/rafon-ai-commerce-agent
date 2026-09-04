@@ -23,7 +23,13 @@ import AppShell from "@/components/layout/AppShell";
 import MetricCard from "@/components/dashboard/MetricCard";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 import GlassCard from "@/components/shared/GlassCard";
-import { AuditDashboardData, AuditEvent, fetchAuditData } from "@/lib/api";
+import {
+  AuditDashboardData,
+  AuditEvent,
+  fetchAuditData,
+  fetchMerchantPolicies,
+  updateMerchantPolicies,
+} from "@/lib/api";
 
 export default function DashboardPage() {
   const [data, setData] = useState<AuditDashboardData | null>(null);
@@ -31,6 +37,7 @@ export default function DashboardPage() {
   const [targetMargin, setTargetMargin] = useState(25);
   const [holdMinutes, setHoldMinutes] = useState(15);
   const [savedStatus, setSavedStatus] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [filterType, setFilterType] = useState<string>("ALL");
 
   const loadData = () => {
@@ -42,15 +49,35 @@ export default function DashboardPage() {
         setHoldMinutes(res.merchant_settings.hold_duration_minutes || 15);
       }
     });
+
+    fetchMerchantPolicies().then((policies) => {
+      if (policies && typeof policies === "object") {
+        if (policies.max_ai_discount_pct !== undefined) setMaxDiscount(policies.max_ai_discount_pct);
+        if (policies.target_upsell_margin_pct !== undefined) setTargetMargin(policies.target_upsell_margin_pct);
+        if (policies.hold_duration_minutes !== undefined) setHoldMinutes(policies.hold_duration_minutes);
+      }
+    });
   };
 
   useEffect(() => {
     loadData();
   }, []);
 
-  const handleSaveGuardrails = () => {
-    setSavedStatus(true);
-    setTimeout(() => setSavedStatus(false), 2500);
+  const handleSaveGuardrails = async () => {
+    setIsSaving(true);
+    try {
+      await updateMerchantPolicies({
+        max_ai_discount_pct: maxDiscount,
+        target_upsell_margin_pct: targetMargin,
+        hold_duration_minutes: holdMinutes,
+      });
+      setSavedStatus(true);
+      setTimeout(() => setSavedStatus(false), 3000);
+    } catch (err) {
+      console.error("Failed to update merchant policies:", err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const filteredEvents = (data?.events || []).filter((e) => {
@@ -212,11 +239,12 @@ export default function DashboardPage() {
                 <div className="pt-2">
                   <button
                     type="button"
+                    disabled={isSaving}
                     onClick={handleSaveGuardrails}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-2.5 text-xs font-black text-slate-950 transition hover:scale-[1.02] active:scale-98"
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 py-2.5 text-xs font-black text-slate-950 transition hover:scale-[1.02] active:scale-98 disabled:opacity-60"
                   >
                     <Save size={14} />
-                    {savedStatus ? "Guardrails Enforced!" : "Update Guardrail Policy"}
+                    {isSaving ? "Enforcing Policies..." : savedStatus ? "Guardrails Enforced & Active!" : "Update Guardrail Policy"}
                   </button>
                 </div>
               </div>

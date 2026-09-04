@@ -39,7 +39,11 @@ class ChatResponse(BaseModel):
     comparison: SpecComparison | None = None
     action: str = "RECOMMEND"  # GREETING, RECOMMEND, UPSELL, CART_ACTION, COMPARISON, CLARIFY
     budget_utilized_percentage: float = 0.0
-    model_used: str = "gemini-2.5-flash"
+    model_used: str = "Grok-2-Commerce"
+    reasoning_summary: str = ""
+    rejected_products: list[dict[str, Any]] = []
+    memory_updates: dict[str, Any] = {}
+    specs_extracted: dict[str, Any] = {}
 
     model_config = {"protected_namespaces": ()}
 
