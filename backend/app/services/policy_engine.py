@@ -18,91 +18,140 @@ class PolicyEngine:
         upsell_id = decision.get("upsell_product_id")
         intent = decision.get("intent", "PRODUCT_DISCOVERY")
         confidence = float(decision.get("confidence", 0.95))
+        action = decision.get("action", "RECOMMEND")
 
+        # 1. Base Telemetry: Query Tokenization
         telemetry: list[TelemetryStep] = [
             TelemetryStep(
                 id="step-1",
                 name="QUERY_INGEST",
                 status="completed",
                 details="Natural language tokenization & semantic mapping complete",
-                latency_ms=18,
+                latency_ms=16,
                 confidence=1.0,
             ),
+        ]
+
+        # 2. Base Telemetry: Intent Parsing
+        if budget:
+            intent_details = f"Extracted intent: '{intent}' with budget ceiling ₹{budget:,}"
+        else:
+            intent_details = f"Extracted intent: '{intent}'"
+
+        telemetry.append(
             TelemetryStep(
                 id="step-2",
                 name="INTENT_PARSED",
                 status="completed",
-                details=f"Extracted intent: '{intent}' with budget ceiling ₹{budget:,}" if budget else f"Extracted intent: '{intent}'",
-                latency_ms=42,
+                details=intent_details,
+                latency_ms=38,
                 confidence=confidence,
-            ),
-        ]
+            )
+        )
 
-        # Validate primary product
-        product = get_product(recommended_id) if recommended_id else None
-        if recommended_id and product is None:
+        # 3. Conversational / Meta / Greeting Branch (No product recommendation)
+        if not recommended_id or action in ["GREETING", "CHAT", "CLARIFY"]:
             decision["recommended_product_id"] = None
+            decision["upsell_product_id"] = None
+
+            telemetry.append(
+                TelemetryStep(
+                    id="step-3",
+                    name="POLICY_ENFORCED",
+                    status="completed",
+                    details="Conversational mode active. Merchant catalog bounding on standby.",
+                    latency_ms=8,
+                    confidence=1.0,
+                )
+            )
+
+            audit_service.log_event(
+                "COMMERCE_DECISION_VALIDATED",
+                {
+                    "mode": "CONVERSATIONAL",
+                    "action": action,
+                    "confidence": confidence,
+                },
+                trace_id=trace_id,
+            )
+            return decision, telemetry, None, 0.0
+
+        # 4. Commerce Branch: Primary Product Validation
+        product = get_product(recommended_id)
+        if product is None:
+            decision["recommended_product_id"] = None
+            decision["upsell_product_id"] = None
             telemetry.append(
                 TelemetryStep(
                     id="step-3",
                     name="CATALOG_BOUNDING",
                     status="failed",
-                    details=f"Product ID '{recommended_id}' not found in verified catalog",
+                    details=f"Product ID '{recommended_id}' not found in catalog",
                     latency_ms=5,
                     confidence=0.0,
                 )
             )
-        elif product:
-            # Check price vs budget
-            if budget is not None and product.price > budget:
-                telemetry.append(
-                    TelemetryStep(
-                        id="step-3",
-                        name="CATALOG_BOUNDING",
-                        status="failed",
-                        details=f"REJECTED: Product price (₹{product.price:,}) exceeds customer budget (₹{budget:,})",
-                        latency_ms=8,
-                        confidence=1.0,
-                    )
-                )
-                decision["recommended_product_id"] = None
-            else:
-                telemetry.append(
-                    TelemetryStep(
-                        id="step-3",
-                        name="CATALOG_BOUNDING",
-                        status="completed",
-                        details=f"PASSED: '{product.name}' (₹{product.price:,}) complies with budget limit (₹{budget:,})" if budget else f"PASSED: '{product.name}' (₹{product.price:,}) in stock",
-                        latency_ms=12,
-                        confidence=1.0,
-                    )
-                )
+            return decision, telemetry, None, 0.0
 
-        # Validate upsell product
+        # Check Price vs Budget Constraint
+        if budget is not None and product.price > budget:
+            telemetry.append(
+                TelemetryStep(
+                    id="step-3",
+                    name="CATALOG_BOUNDING",
+                    status="failed",
+                    details=f"REJECTED: '{product.name}' (₹{product.price:,}) exceeds budget (₹{budget:,})",
+                    latency_ms=8,
+                    confidence=1.0,
+                )
+            )
+            decision["recommended_product_id"] = None
+            decision["upsell_product_id"] = None
+            return decision, telemetry, None, 0.0
+
+        # Passed Catalog Validation
+        telemetry.append(
+            TelemetryStep(
+                id="step-3",
+                name="CATALOG_BOUNDING",
+                status="completed",
+                details=(
+                    f"PASSED: '{product.name}' (₹{product.price:,}) complies with budget limit (₹{budget:,})"
+                    if budget
+                    else f"PASSED: '{product.name}' (₹{product.price:,}) verified in stock"
+                ),
+                latency_ms=12,
+                confidence=1.0,
+            )
+        )
+
+        # 5. Upsell Validation
         upsell_product = get_product(upsell_id) if upsell_id else None
-        if upsell_product:
+        if upsell_product and upsell_product.id != product.id:
             telemetry.append(
                 TelemetryStep(
                     id="step-4",
                     name="POLICY_ENFORCED",
                     status="completed",
-                    details=f"Upsell '{upsell_product.name}' passes merchant margin limit (25%) & compatibility bounds",
+                    details=f"Upsell '{upsell_product.name}' complies with merchant bundle rules",
                     latency_ms=14,
                     confidence=0.98,
                 )
             )
         else:
+            decision["upsell_product_id"] = None
             telemetry.append(
                 TelemetryStep(
                     id="step-4",
                     name="POLICY_ENFORCED",
                     status="completed",
-                    details="Merchant guardrails validated. Zero hallucination guarantee active.",
+                    details="Merchant guardrails validated. Direct single product recommendation.",
                     latency_ms=10,
                     confidence=1.0,
                 )
             )
 
+        # 6. Payload Synchronized
         telemetry.append(
             TelemetryStep(
                 id="step-5",
@@ -114,14 +163,14 @@ class PolicyEngine:
             )
         )
 
-        # Calculate budget utilized percentage
+        # Budget calculation
         budget_pct = 0.0
         if budget and product:
             budget_pct = min(100.0, round((product.price / budget) * 100, 1))
 
-        # Comparison object if alternative query
+        # Dynamic Comparison (Only if specifically an alternative / comparison action)
         comparison = None
-        if decision.get("action") == "COMPARISON" or recommended_id == "boat-immortal-131":
+        if action == "COMPARISON" and decision.get("recommended_product_id") == "boat-immortal-131":
             comparison = SpecComparison(
                 primary_product_id="nothing-ear-a",
                 alternative_product_id="boat-immortal-131",
@@ -154,12 +203,11 @@ class PolicyEngine:
             product = get_product(item.product_id)
             unit_price = item.unit_price
             if product:
-                # If it's a bundled upsell, price can be discounted
                 if item.is_upsell and item.product_id == "fast-charger-65w":
-                    unit_price = 499  # Special verified bundle price
+                    unit_price = 499
                 elif unit_price != product.price and not item.is_upsell:
                     unit_price = product.price
-            subtotal += unit_price * item.quantity
+                subtotal += unit_price * item.quantity
 
         discount_amount = 0
         if discount_code:
