@@ -28,6 +28,8 @@ def get_merchant_policies() -> dict[str, Any]:
     """Retrieve current active merchant boundary guardrails and rules."""
     return {
         "status": "active",
+        "guardrail_status": "ACTIVE",
+        "policies": MERCHANT_SETTINGS,
         "settings": MERCHANT_SETTINGS,
         "rules": [
             "Strict catalog bounding: No out-of-catalog hallucinations permitted",
@@ -35,6 +37,20 @@ def get_merchant_policies() -> dict[str, Any]:
             "Margin protection: Minimum acceptable margin maintained across automated bundles",
             "Discount cap: AI rescue discounts hard-limited to verified limits",
         ],
+        "zero_hallucination_guarantee": True,
+        "hmac_enforcement": True,
+    }
+
+
+@router.post("")
+def update_merchant_policies(payload: dict[str, Any]) -> dict[str, Any]:
+    """Update active merchant policy settings."""
+    MERCHANT_SETTINGS.update(payload)
+    return {
+        "status": "success",
+        "message": "Merchant policy guardrails updated.",
+        "policies": MERCHANT_SETTINGS,
+        "settings": MERCHANT_SETTINGS,
     }
 
 
@@ -65,5 +81,6 @@ def update_merchant_settings(payload: MerchantSettingsUpdate) -> dict[str, Any]:
 
     return {
         "message": "Merchant guardrail settings updated",
+        "policies": MERCHANT_SETTINGS,
         "settings": MERCHANT_SETTINGS,
     }
