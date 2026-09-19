@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" width="100%" height="580">
+  <defs>
+    <linearGradient id="rafonBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080d1a"/>
+      <stop offset="50%" stop-color="#0e172e"/>
+      <stop offset="100%" stop-color="#070a14"/>
+    </linearGradient>
+
+    <pattern id="rafonGrid" width="25" height="25" patternUnits="userSpaceOnUse">
+      <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#1e293b" stroke-width="0.7" stroke-opacity="0.35"/>
+    </pattern>
+
+    <filter id="rafonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#00f0ff"/>
+    </marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb923c"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="580" fill="url(#rafonBg)"/>
+  <rect width="1000" height="580" fill="url(#rafonGrid)"/>
+
+  <!-- Header -->
+  <g transform="translate(40, 35)">
+    <text font-family="'Fira Code', monospace" font-size="12" font-weight="700" fill="#00f0ff" letter-spacing="2">&gt; AUTONOMOUS_AGENT :: REACT_WORKFLOW</text>
+    <text y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="800" fill="#f8fafc">RAFON AI — Autonomous Commerce Agent &amp; Negotiation Swarm</text>
+    <text y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="500" fill="#94a3b8">Multi-Agent ReAct Architecture | Dynamic Pricing | Automated Vendor Arbitrage</text>
+  </g>
+
+  <!-- Status Pill -->
+  <g transform="translate(740, 35)">
+    <rect width="220" height="32" rx="16" fill="#031525" stroke="#38bdf8" stroke-width="1" stroke-opacity="0.4"/>
+    <circle cx="16" cy="16" r="4" fill="#38bdf8" filter="url(#rafonGlow)"/>
+    <text x="28" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="700" fill="#38bdf8">SUB-SECOND TOOL CALLS</text>
+  </g>
+
+  <!-- 1. Trigger & Ingestion -->
+  <g transform="translate(40, 110)">
+    <rect width="240" height="420" rx="12" fill="#0c1527" stroke="#1d4ed8" stroke-width="1.5"/>
+    <rect width="240" height="32" rx="12" fill="#1e3a8a"/>
+    <text x="16" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#93c5fd">1. EVENT &amp; INTENT INGEST</text>
+
+    <rect x="16" y="48" width="208" height="85" rx="8" fill="#060d1d" stroke="#334155" stroke-width="1"/>
+    <text x="24" y="70" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">Customer Inquiries</text>
+    <text x="24" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8">• Natural language queries</text>
+    <text x="24" y="108" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8">• Multi-turn negotiation asks</text>
+
+    <rect x="16" y="145" width="208" height="85" rx="8" fill="#060d1d" stroke="#334155" stroke-width="1"/>
+    <text x="24" y="167" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">Supply Chain Triggers</text>
+    <text x="24" y="187" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8">• Low inventory webhooks</text>
+    <text x="24" y="205" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8">• Vendor price shift events</text>
+
+    <rect x="16" y="242" width="208" height="85" rx="8" fill="#060d1d" stroke="#334155" stroke-width="1"/>
+    <text x="24" y="264" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">Market Stream Feed</text>
+    <text x="24" y="284" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8">• Competitor price scraping</text>
+    <text x="24" y="302" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8">• Demand surge signals</text>
+
+    <rect x="16" y="340" width="208" height="70" rx="8" fill="#060d1d" stroke="#1e3a8a" stroke-width="1"/>
+    <text x="24" y="362" font-family="'Fira Code', monospace" font-size="10.5" fill="#38bdf8">Input Vectorizer</text>
+    <text x="24" y="380" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#94a3b8">Embeddings: text-embed-004</text>
+    <text x="24" y="396" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#94a3b8">Cosine Similarity Match</text>
+  </g>
+
+  <!-- 2. ReAct Agent Core -->
+  <g transform="translate(340, 110)">
+    <rect width="320" height="420" rx="12" fill="#0b172a" stroke="#00f0ff" stroke-width="2"/>
+    <rect width="320" height="32" rx="12" fill="#0e7490"/>
+    <text x="16" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#cffafe">2. CORE AGENT CONTROLLER</text>
+
+    <!-- Brain Box -->
+    <rect x="16" y="48" width="288" height="90" rx="8" fill="#042f2e" stroke="#14b8a6" stroke-width="1.5"/>
+    <text x="26" y="70" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#2dd4bf">🧠 Reasoning &amp; Planning Engine</text>
+    <text x="26" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#e0e7ff">• LangGraph Cyclic ReAct StateGraph</text>
+    <text x="26" y="108" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#e0e7ff">• Gemini 1.5 Pro Function Calling</text>
+    <text x="26" y="126" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#e0e7ff">• Step-by-Step Chain-of-Thought (CoT)</text>
+
+    <!-- Memory & Context -->
+    <rect x="16" y="148" width="288" height="80" rx="8" fill="#082f49" stroke="#0284c7" stroke-width="1"/>
+    <text x="26" y="170" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#38bdf8">💾 Memory &amp; State Buffer</text>
+    <text x="26" y="190" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#bae6fd">• Short-term: Redis Conversation State</text>
+    <text x="26" y="208" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#bae6fd">• Long-term: MongoDB Atlas Vector Search</text>
+
+    <!-- Guardrails -->
+    <rect x="16" y="238" width="288" height="80" rx="8" fill="#2e1065" stroke="#7c3aed" stroke-width="1"/>
+    <text x="26" y="260" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#c084fc">🛡️ Policy &amp; Margin Guardrails</text>
+    <text x="26" y="280" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#ddd6fe">• Hard Minimum Margin Floor (e.g. 18%)</text>
+    <text x="26" y="298" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#ddd6fe">• PII Sanitization &amp; Rate-limit Gates</text>
+
+    <!-- Cycle Indicator -->
+    <rect x="16" y="330" width="288" height="75" rx="8" fill="#030712" stroke="#334155" stroke-width="1"/>
+    <text x="26" y="352" font-family="'Fira Code', monospace" font-size="11" font-weight="700" fill="#00f0ff">LOOP: Plan -&gt; Tool -&gt; Observe</text>
+    <text x="26" y="372" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8">Until Objective Met or Escalation</text>
+    <text x="26" y="390" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#34d399">✓ Self-Correcting Execution Trajectory</text>
+  </g>
+
+  <!-- 3. Tool Ecosystem & Execution Layer -->
+  <g transform="translate(710, 110)">
+    <rect width="250" height="420" rx="12" fill="#1c1917" stroke="#ea580c" stroke-width="1.5"/>
+    <rect width="250" height="32" rx="12" fill="#7c2d12"/>
+    <text x="16" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#fed7aa">3. TOOL EXECUTORS</text>
+
+    <rect x="16" y="48" width="218" height="80" rx="8" fill="#0c0a09" stroke="#44403c" stroke-width="1"/>
+    <text x="24" y="68" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="700" fill="#fb923c">📦 Inventory Tool</text>
+    <text x="24" y="86" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#a8a29e">• Real-time stock queries</text>
+    <text x="24" y="102" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#a8a29e">• Safety buffer evaluations</text>
+
+    <rect x="16" y="138" width="218" height="80" rx="8" fill="#0c0a09" stroke="#44403c" stroke-width="1"/>
+    <text x="24" y="158" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="700" fill="#fb923c">🏷️ Dynamic Pricing Tool</text>
+    <text x="24" y="176" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#a8a29e">• Competitor delta calculation</text>
+    <text x="24" y="192" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#a8a29e">• Elasticity demand modeling</text>
+
+    <rect x="16" y="228" width="218" height="80" rx="8" fill="#0c0a09" stroke="#44403c" stroke-width="1"/>
+    <text x="24" y="248" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="700" fill="#fb923c">🤝 Vendor RFQ Swarm</text>
+    <text x="24" y="266" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#a8a29e">• Auto quote requests &amp; parsing</text>
+    <text x="24" y="282" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#a8a29e">• Multi-round counter-offers</text>
+
+    <rect x="16" y="318" width="218" height="85" rx="8" fill="#0c0a09" stroke="#ea580c" stroke-width="1"/>
+    <text x="24" y="338" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="700" fill="#fb923c">💳 Checkout &amp; Ledger</text>
+    <text x="24" y="356" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#a8a29e">• ACID transaction commit</text>
+    <text x="24" y="372" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#a8a29e">• Webhook notification dispatch</text>
+    <text x="24" y="388" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#34d399">✓ Tamper-evident audit log</text>
+  </g>
+
+  <!-- Connectors -->
+  <path d="M 280 320 L 340 320" fill="none" stroke="#00f0ff" stroke-width="2" marker-end="url(#arrowCyan)"/>
+  <path d="M 660 320 L 710 320" fill="none" stroke="#fb923c" stroke-width="2" marker-end="url(#arrowOrange)"/>
+</svg>
